@@ -9,8 +9,10 @@ Android phones.
 - Orientation: portrait.
 - Art style: pixel art.
 - Base virtual grid: 180 x 320 (9:16 portrait).
-- Source art authored at 6x the base grid (180 x 6 = 1080 -> matches the
-  physical width of common 1080p phones; integer downscale elsewhere).
+- Art authored at the base grid in px (1 art px = 1 virtual px); exported 1:1,
+  no pre-scaling in the art tool. Flame upscales with an integer zoom, so each
+  virtual pixel becomes 6 physical px on 1080p phones (zoom 6), 4 px on 720p
+  (zoom 4), etc. Never fractional.
 - Package/directory name: `erls_dino`.
 
 ## Bootstrap
@@ -23,27 +25,55 @@ flutter pub add flame
 Lock the app to portrait in `AndroidManifest.xml` / `SystemChrome`.
 
 ## Sprite spec
-Base grid = game/virtual pixels. Source = 6x base for crisp output.
+Base grid = game/virtual pixels. Author and export at these sizes (1:1); the
+engine handles upscaling via integer zoom.
 
-| Sprite        | Base px  | Source px @6x |
-|---------------|----------|---------------|
-| Dino run      | 48 x 52  | 288 x 312     |
-| Dino duck     | 64 x 34  | 384 x 204     |
-| Small cactus  | 18 x 38  | 108 x 228     |
-| Large cactus  | 26 x 54  | 156 x 324     |
-| Pterodactyl   | 48 x 40  | 288 x 240     |
-| Cloud         | 46 x 14  | 276 x 84      |
-| Ground tile   | 180 x 12 | 1080 x 72     |
+| Sprite                  | Base px  |
+|-------------------------|----------|
+| Dino run / jump / dead  | 48 x 52  |
+| Dino duck               | 64 x 34  |
+| Small cactus            | 18 x 38  |
+| Large cactus            | 26 x 54  |
+| Pterodactyl             | 48 x 40  |
+| Cloud                   | 46 x 14  |
+| Ground tile             | 180 x 12 |
+
+Do not pre-scale sprite PNGs. Export them at the sizes above and let Flame's
+integer zoom do the magnification.
+
+Aseprite workflow: New Sprite at the base size, Pixel-perfect stroke mode on,
+Pencil tool, small fixed palette. Export PNG / sprite sheet at 1x (no Scale
+step). See "Frame breakdown" below for the animation frames needed.
+
+### Frame breakdown
+Each frame uses the base size of its sprite row above.
+
+| Animation       | Frames | Notes                                  |
+|-----------------|--------|----------------------------------------|
+| `dino_idle`     | 1      | May reuse a run frame                  |
+| `dino_run`      | 2      | Alternating leg cycle                  |
+| `dino_jump`     | 1      | Tucked legs                            |
+| `dino_duck`     | 2      | Wider + shorter pose, 2-frame shuffle  |
+| `dino_dead`     | 1      | X eye / limp                           |
+| `cactus_small`  | 1      | Static                                 |
+| `cactus_large`  | 1      | Static                                 |
+| `pterodactyl`   | 2      | Wings up / wings down                  |
+| `cloud`         | 1      | Static, parallax layer                 |
+| `ground`        | 1      | Must tile seamlessly L<>R at 180 base  |
+
+Name atlas frames so `findSpritesByName('dino_run')` groups them, e.g.
+`dino_run_0`, `dino_run_1`.
 
 Tune dino size after a test render; 48 base px is ~27% of the 180px width.
 
 ## Pixel-art rendering rules (non-negotiable for crispness)
 - `FilterQuality.none` on every sprite paint.
-- Integer zoom only: prefer `zoom = (physicalWidth / 180).floor()` on the
-  viewfinder over `CameraComponent.withFixedResolution` (avoids fractional
-  scales that shimmer).
+- Integer zoom only: since art is authored 1x, prefer
+  `zoom = (physicalWidth / 180).floor()` on the viewfinder over
+  `CameraComponent.withFixedResolution` (avoids fractional scales that
+  shimmer).
 - Snap render positions to the base pixel grid (round x/y in `update`).
-- 1-2 source px padding between atlas frames, or use `bleed`, to stop bleed.
+- 1 px padding between atlas frames, or use `bleed`, to stop bleed.
 - Ground is a repeatable tile driven by `ParallaxComponent`, not one big image.
 - Use `flame_texturepacker` atlas for the sheet.
 
