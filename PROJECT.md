@@ -28,13 +28,17 @@ Lock the app to portrait in `AndroidManifest.xml` / `SystemChrome`.
 Base grid = game/virtual pixels. Author and export at these sizes (1:1); the
 engine handles upscaling via integer zoom.
 
-| Sprite                  | Base px  |
-|-------------------------|----------|
-| Dino run / jump / dead  | 48 x 52  |
-| Garlic                  | 26 x 54  |
-| Durian                  | 18 x 38  |
-| Cloud                   | 46 x 14  |
-| Ground tile             | 180 x 12 |
+| Sprite        | File(s)                              | Base px  |
+|---------------|--------------------------------------|----------|
+| Dino idle     | `erls-idle.png`                      | 48 x 52  |
+| Dino run      | `erls-run-01.png`, `erls-run-02.png` | 48 x 52  |
+| Dino jump     | `erls-jump.png`                      | 48 x 52  |
+| Garlic        | `garlic.png`                         | 26 x 54  |
+| Mint-choco    | `mint-choco.png`                     | 18 x 38  |
+| Cloud         | `cloud.png`                          | 46 x 14  |
+| Ground tile   | `ground.png`                         | 180 x 12 |
+
+Death sprite is not authored yet; reuse `erls-idle.png` for now.
 
 Do not pre-scale sprite PNGs. Export them at the sizes above and let Flame's
 integer zoom do the magnification.
@@ -46,19 +50,19 @@ Scale step). See "Frame breakdown" below for the animation frames needed.
 ### Frame breakdown
 Each frame uses the base size of its sprite row above.
 
-| Animation       | Frames | Notes                                  |
-|-----------------|--------|----------------------------------------|
-| `dino_idle`     | 1      | May reuse a run frame                  |
-| `dino_run`      | 2      | Alternating leg cycle                  |
-| `dino_jump`     | 1      | Tucked legs                            |
-| `dino_dead`     | 1      | X eye / limp                           |
-| `garlic`        | 1      | Static                                 |
-| `durian`        | 1      | Static                                 |
-| `cloud`         | 1      | Static, parallax layer                 |
-| `ground`        | 1      | Must tile seamlessly L<>R at 180 base  |
+| Animation       | Frames | Notes                                        |
+|-----------------|--------|----------------------------------------------|
+| `erls_idle`     | 1      | `erls-idle.png`; also stands in for death    |
+| `erls_run`      | 2      | `erls-run-01.png` -> `erls-run-02.png`       |
+| `erls_jump`     | 1      | `erls-jump.png`; tucked legs                 |
+| `erls_dead`     | 0      | Pending; reuse idle for now                  |
+| `garlic`        | 1      | Static obstacle                              |
+| `mint-choco`    | 1      | Static obstacle                              |
+| `cloud`         | 1      | Static, parallax layer                       |
+| `ground`        | 1      | Must tile seamlessly L<>R at 180 base        |
 
 Export each frame as a separate PNG, named so animation frames sort in order,
-e.g. `dino_run_0.png`, `dino_run_1.png`.
+e.g. `erls-run-01.png`, `erls-run-02.png`.
 
 Tune dino size after a test render; 48 base px is ~27% of the 180px width.
 
@@ -83,7 +87,7 @@ lib/
   components/
     dino.dart                # state machine: idle/run/jump/dead
     garlic.dart
-    durian.dart
+    mint_choco.dart
     cloud.dart
     ground.dart
   managers/
@@ -92,14 +96,14 @@ lib/
   ui/
     game_over_overlay.dart
 assets/
-  images/*.png               # one PNG per frame (e.g. dino_run_0.png)
+  images/*.png               # one PNG per frame (e.g. erls-run-01.png)
   audio/*.ogg                # optional sfx
 ```
 
 ## Gameplay scope
 - Dino runs right; obstacles scroll left.
 - Input: tap/space = jump. Tune for touch.
-- Obstacle spawner: weighted garlic/durian;
+- Obstacle spawner: weighted garlic/mint-choco;
   scroll speed increases over time.
 - Collision: `RectangleHitbox` on dino (smaller than sprite for fairness) and
   obstacles.
