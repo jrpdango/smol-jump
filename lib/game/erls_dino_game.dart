@@ -62,6 +62,7 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
     KeyEvent event,
     Set<LogicalKeyboardKey> keysPressed,
   ) {
+    // Key repeat arrives as KeyRepeatEvent, so this already ignores auto-repeat.
     if (event is! KeyDownEvent) {
       return KeyEventResult.ignored;
     }

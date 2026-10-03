@@ -14,6 +14,7 @@ abstract class Obstacle extends SpriteComponent
     required this.spritePath,
     required Vector2 size,
     required super.position,
+    this.groundOffset = 0,
   }) : super(
           size: size,
           anchor: Anchor.bottomLeft,
@@ -21,11 +22,15 @@ abstract class Obstacle extends SpriteComponent
 
   final String spritePath;
 
+  /// How far the sprite's bottom sits above the ground. Ground obstacles use 0;
+  /// aerial hazards float above the running dino.
+  final double groundOffset;
+
   @override
   Future<void> onLoad() async {
     paint.filterQuality = FilterQuality.none;
     sprite = Sprite(await game.images.load(spritePath));
-    position.y = ErlsDinoWorld.groundY;
+    position.y = ErlsDinoWorld.groundY - groundOffset;
     for (final hitbox in buildHitboxes()) {
       add(hitbox);
     }

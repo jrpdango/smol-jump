@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:erls_dino/components/dino.dart';
+import 'package:erls_dino/components/durian.dart';
 import 'package:erls_dino/game/erls_dino_game.dart';
 import 'package:erls_dino/game/world.dart';
 import 'package:erls_dino/managers/obstacle_spawner.dart';
@@ -98,6 +99,92 @@ void main() {
       expect(ErlsDinoGame.zoomForWidth(360), 2);
       expect(ErlsDinoGame.zoomForWidth(540), 3);
       expect(ErlsDinoGame.zoomForWidth(720), 4);
+    });
+  });
+
+  group('aerial hazard', () {
+    const dinoHitboxTop = 52.0 - 16.0; // 36px above ground
+    const dinoHitboxBottom = 52.0 - 48.0; // 4px above ground
+    final jumpPeak =
+        Dino.jumpVelocity * Dino.jumpVelocity / (2 * Dino.gravity);
+    final highestReach = dinoHitboxBottom + jumpPeak;
+
+    double hitboxBottom(double clearance) =>
+        clearance + Durian.hitboxBottomInset;
+    double hitboxTop(double clearance) => clearance + Durian.hitboxTopInset;
+
+    test('spans forced jumps, apex clears and un-jumpable heights', () {
+      final lowestBottom = hitboxBottom(Durian.minBottomClearance);
+      final lowestTop = hitboxTop(Durian.minBottomClearance);
+      final highestBottom = hitboxBottom(Durian.maxBottomClearance);
+      final highestTop = hitboxTop(Durian.maxBottomClearance);
+
+      // The lowest durian overlaps a grounded dino, so it must be jumped...
+      expect(lowestBottom, lessThan(dinoHitboxTop));
+      // ...and it clears comfortably within the jump.
+      expect(lowestTop, lessThan(highestReach));
+
+      // The highest durian is safe to run under...
+      expect(highestBottom, greaterThan(dinoHitboxTop));
+      // ...but its top is above the dino's reach, so it cannot be jumped.
+      expect(highestTop, greaterThan(highestReach));
+    });
+
+    test('every height is either jumpable or safe to run under', () {
+      for (var clearance = Durian.minBottomClearance;
+          clearance <= Durian.maxBottomClearance;
+          clearance += 1) {
+        final canJumpOver = hitboxTop(clearance) < highestReach;
+        final canRunUnder = hitboxBottom(clearance) > dinoHitboxTop;
+        expect(
+          canJumpOver || canRunUnder,
+          isTrue,
+          reason: 'clearance $clearance is impossible to avoid',
+        );
+      }
+    });
+  });
+
+  group('hazard sequencing', () {
+    test('ground to aerial waits out a full jump', () {
+      expect(
+        ObstacleSpawner.floorSecondsFor(HazardType.ground, HazardType.aerial),
+        greaterThan(Dino.jumpAirTime),
+      );
+    });
+
+    test('aerial to aerial waits out a full jump', () {
+      expect(
+        ObstacleSpawner.floorSecondsFor(HazardType.aerial, HazardType.aerial),
+        greaterThan(Dino.jumpAirTime),
+      );
+    });
+
+    test('aerial to ground leaves room to jump', () {
+      expect(
+        ObstacleSpawner.floorSecondsFor(HazardType.aerial, HazardType.ground),
+        greaterThanOrEqualTo(ObstacleSpawner.minGapSeconds),
+      );
+    });
+
+    test('distance gap never drops below the transition floor', () {
+      final floor = ObstacleSpawner.floorSecondsFor(
+        HazardType.ground,
+        HazardType.aerial,
+      );
+      for (var speed = ErlsDinoWorld.baseSpeed;
+          speed <= ErlsDinoWorld.maxSpeed;
+          speed += 60) {
+        for (final fraction in [0.0, 0.5, 0.99]) {
+          final delay = ObstacleSpawner.gapSeconds(
+            speed: speed,
+            from: HazardType.ground,
+            to: HazardType.aerial,
+            randomFraction: fraction,
+          );
+          expect(delay, greaterThanOrEqualTo(floor));
+        }
+      }
     });
   });
 }
