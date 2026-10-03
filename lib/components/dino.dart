@@ -21,6 +21,9 @@ class Dino extends SpriteAnimationComponent
   static const double gravity = 1500;
   static const double jumpVelocity = -500;
 
+  /// Total time the dino spends airborne during a full jump.
+  static double get jumpAirTime => 2 * jumpVelocity.abs() / gravity;
+
   /// The dino's collision shape, in sprite-local pixels. The bottom-left
   /// corner is trimmed so the empty gap between the legs cannot be hit.
   static ShapeHitbox createHitbox() => PolygonHitbox([

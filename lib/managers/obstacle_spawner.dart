@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
+import '../components/dino.dart';
 import '../components/garlic.dart';
 import '../components/mint_choco.dart';
 import '../game/erls_dino_game.dart';
@@ -13,10 +14,15 @@ class ObstacleSpawner extends Component with HasGameReference<ErlsDinoGame> {
   static const double _garlicWeight = 0.6;
   static const double _minGap = 130;
   static const double _maxExtraGap = 120;
-  static const double _minDelay = 0.6;
+
+  /// Floor on the time between obstacles. Must exceed the dino's air time so it
+  /// can land and jump again; the extra margin covers touch reaction time. Only
+  /// bites at high speed, where the distance-based gap would otherwise be too
+  /// short to jump in succession.
+  static final double minGapSeconds = Dino.jumpAirTime + 0.20;
 
   final Random _random = Random();
-  double _timeUntilSpawn = 0.6;
+  double _timeUntilSpawn = minGapSeconds;
 
   @override
   void update(double dt) {
@@ -39,10 +45,10 @@ class ObstacleSpawner extends Component with HasGameReference<ErlsDinoGame> {
     game.world.add(obstacle);
 
     final gap = _minGap + _random.nextDouble() * _maxExtraGap;
-    _timeUntilSpawn = max(_minDelay, gap / game.world.speed);
+    _timeUntilSpawn = max(minGapSeconds, gap / game.world.speed);
   }
 
   void reset() {
-    _timeUntilSpawn = 0.6;
+    _timeUntilSpawn = minGapSeconds;
   }
 }

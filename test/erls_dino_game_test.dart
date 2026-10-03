@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:erls_dino/components/dino.dart';
 import 'package:erls_dino/game/erls_dino_game.dart';
 import 'package:erls_dino/game/world.dart';
+import 'package:erls_dino/managers/obstacle_spawner.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -41,6 +42,17 @@ void main() {
     const overlap = 20.0 + 23.0;
     final clearance = ErlsDinoWorld.baseSpeed * airborneWindow;
     expect(clearance, greaterThanOrEqualTo(overlap));
+  });
+
+  group('obstacle spacing', () {
+    test('dino can land and jump again between consecutive obstacles', () {
+      expect(Dino.jumpAirTime, closeTo(0.6667, 0.001));
+
+      // The spawner's time floor must exceed a full jump's air time, otherwise
+      // the dino is still airborne when the next obstacle arrives at high speed.
+      expect(ObstacleSpawner.minGapSeconds, greaterThan(Dino.jumpAirTime));
+      expect(ObstacleSpawner.minGapSeconds, closeTo(0.8667, 0.001));
+    });
   });
 
   group('speed ramp', () {
