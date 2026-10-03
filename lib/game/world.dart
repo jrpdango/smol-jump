@@ -35,7 +35,17 @@ class ErlsDinoWorld extends World
 
   static const double baseSpeed = 120;
   static const double maxSpeed = 230;
-  static const double acceleration = 3;
+
+  /// Time to ease from [baseSpeed] to [maxSpeed]. The curve starts and ends
+  /// with zero slope so the acceleration never feels abrupt.
+  static const double speedRampSeconds = 60;
+
+  /// Eased scroll speed at [elapsed] seconds into a run.
+  static double speedAt(double elapsed) {
+    final p = (elapsed / speedRampSeconds).clamp(0.0, 1.0);
+    final eased = p * p * (3 - 2 * p);
+    return baseSpeed + (maxSpeed - baseSpeed) * eased;
+  }
 
   late final Dino dino = Dino();
   late final Ground ground = Ground();
@@ -64,15 +74,17 @@ class ErlsDinoWorld extends World
 
   @override
   void update(double dt) {
-    super.update(dt);
     final running = game.isRunning && !game.isGameOver;
     if (running) {
       elapsed += dt;
-      speed = min(baseSpeed + acceleration * elapsed, maxSpeed);
+      speed = speedAt(elapsed);
     } else {
       speed = baseSpeed;
     }
+    // Push the speed out before children update so the ground, obstacles and
+    // clouds all scroll from the exact same value in a given frame.
     ground.setScrollSpeed(running ? speed : 0);
+    super.update(dt);
   }
 
   void reset() {

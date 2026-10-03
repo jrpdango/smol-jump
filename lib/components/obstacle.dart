@@ -40,7 +40,6 @@ abstract class Obstacle extends SpriteComponent
       return;
     }
     position.x -= game.world.speed * dt;
-    position.x = position.x.roundToDouble();
     if (position.x + size.x < ErlsDinoWorld.groundLeft) {
       removeFromParent();
     }

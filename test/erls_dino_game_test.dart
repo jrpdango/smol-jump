@@ -43,6 +43,42 @@ void main() {
     expect(clearance, greaterThanOrEqualTo(overlap));
   });
 
+  group('speed ramp', () {
+    test('stays within base and max speed', () {
+      for (var t = 0.0; t <= ErlsDinoWorld.speedRampSeconds * 2; t += 5) {
+        final speed = ErlsDinoWorld.speedAt(t);
+        expect(speed, greaterThanOrEqualTo(ErlsDinoWorld.baseSpeed));
+        expect(speed, lessThanOrEqualTo(ErlsDinoWorld.maxSpeed));
+      }
+    });
+
+    test('eases in gently, ramps monotonically, then caps out', () {
+      expect(ErlsDinoWorld.speedAt(0), ErlsDinoWorld.baseSpeed);
+      expect(
+        ErlsDinoWorld.speedAt(ErlsDinoWorld.speedRampSeconds),
+        ErlsDinoWorld.maxSpeed,
+      );
+      expect(
+        ErlsDinoWorld.speedAt(ErlsDinoWorld.speedRampSeconds * 3),
+        ErlsDinoWorld.maxSpeed,
+      );
+
+      // The first second adds less speed than a second at the ramp midpoint,
+      // proving the curve starts with a gentle slope.
+      final startGain = ErlsDinoWorld.speedAt(1) - ErlsDinoWorld.speedAt(0);
+      final mid = ErlsDinoWorld.speedRampSeconds / 2;
+      final midGain = ErlsDinoWorld.speedAt(mid + 1) - ErlsDinoWorld.speedAt(mid);
+      expect(startGain, lessThan(midGain));
+
+      var previous = ErlsDinoWorld.speedAt(0);
+      for (var t = 1.0; t <= ErlsDinoWorld.speedRampSeconds; t += 1) {
+        final speed = ErlsDinoWorld.speedAt(t);
+        expect(speed, greaterThanOrEqualTo(previous));
+        previous = speed;
+      }
+    });
+  });
+
   group('zoomForWidth', () {
     test('uses whole-number zoom and never drops below 1', () {
       expect(ErlsDinoGame.zoomForWidth(180), 1);
