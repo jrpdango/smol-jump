@@ -35,7 +35,14 @@ engine handles upscaling via integer zoom.
 | Dino jump     | `erls-jump.png`                      | 48 x 52  |
 | Garlic        | `garlic.png`                         | 26 x 54  |
 | Mint-choco    | `mint-choco.png`                     | 18 x 38  |
-| Cloud         | `cloud.png`                          | 46 x 14  |
+| Cloud (near)  | `cloud-near-01.png`, `cloud-near-02.png` | 46 x 14 |
+| Cloud (far)   | `cloud-far-01.png`, `cloud-far-02.png`   | 30 x 10 |
+| Hills (far)   | `hills-far-01.png`                   | 180 x 56 |
+| Hills (near)  | `hills-near-01.png`                  | 180 x 40 |
+| Sun           | `sun.png`                            | 28 x 28  |
+| Moon          | `moon.png`                           | 24 x 24  |
+| Bird          | `bird-01.png`, `bird-02.png`         | 11 x 7   |
+| Star          | `star-01.png`, `star-02.png`         | 3 x 3, 5 x 5 |
 | Ground tile   | `ground.png`                         | 180 x 12 |
 
 Death sprite is not authored yet; reuse `erls-idle.png` for now.
@@ -58,7 +65,11 @@ Each frame uses the base size of its sprite row above.
 | `erls_dead`     | 0      | Pending; reuse idle for now                  |
 | `garlic`        | 1      | Static obstacle                              |
 | `mint-choco`    | 1      | Static obstacle                              |
-| `cloud`         | 1      | Static, parallax layer                       |
+| `cloud`         | 2+2    | Static; near (1x) + far (smaller/paler) layers |
+| `hills`         | 1+1    | Static; must tile seamlessly L<>R at 180 base |
+| `sun`/`moon`    | 1+1    | Static; opacity driven by the day/night cycle |
+| `bird`          | 2      | `bird-01.png` -> `bird-02.png` (wing flap)    |
+| `star`          | 2      | Small/large; twinkles at night                |
 | `ground`        | 1      | Must tile seamlessly L<>R at 180 base        |
 
 Export each frame as a separate PNG, named so animation frames sort in order,
@@ -75,7 +86,19 @@ Tune dino size after a test render; 48 base px is ~27% of the 180px width.
 - Snap render positions to the base pixel grid (round x/y in `update`).
 - Sprites are separate PNGs (one file per frame); load with `Flame.images.load`
   and reuse the cached instances.
-- Ground is a repeatable tile driven by `ParallaxComponent`, not one big image.
+- Ground, hills and other tiling strips are repeatable tiles driven by
+  `ScrollingLayer` (not one big image).
+
+## Background & day/night
+Draw order (behind the viewport HUD): sky -> stars -> sun/moon -> hills (far,
+near) -> clouds (far, near) -> birds -> ground -> dino/obstacles.
+- `Sky` is a static vertical gradient; the camera never translates, so it stays
+  anchored to the screen.
+- Hills/ground/clouds/birds scroll at fractions of the ground speed for depth.
+- `DayNightCycle` (`managers/day_night_cycle.dart`) loops day -> dusk -> night
+  -> dawn over `dayNightCycleSeconds` of run time and resets to day each run. It
+  drives the sky gradient and a `modulate` tint applied to every sprite via the
+  `Tintable` mixin, plus sun/moon/star intensity.
 
 ## Project structure
 ```
@@ -83,15 +106,24 @@ lib/
   main.dart
   game/
     erls_dino_game.dart      # FlameGame: camera, pixel-perfect zoom, state
-    world.dart               # World: ground, spawner, score zone
+    world.dart               # World: layers, spawners, day/night cycle
   components/
     dino.dart                # state machine: idle/run/jump/dead
     garlic.dart
     mint_choco.dart
+    obstacle.dart
     cloud.dart
     ground.dart
+    scrolling_layer.dart     # tiled, tintable parallax strip
+    sky.dart                 # gradient sky
+    celestial_body.dart      # sun / moon
+    star.dart
+    bird.dart
+    tintable.dart            # day/night tint mixin
   managers/
     obstacle_spawner.dart    # speed ramp + weighted spawn
+    bird_spawner.dart        # decorative flocks
+    day_night_cycle.dart     # keyframed time-of-day
     score.dart
   ui/
     game_over_overlay.dart
@@ -117,4 +149,5 @@ assets/
 3. Jump + input handling.
 4. Obstacle spawning + collision.
 5. Score HUD + game over / restart.
-6. Polish: sfx, high score, optional day/night tint.
+6. Polish: background layers (hills, sun/moon, stars, birds) + full day/night
+   cycle; sfx and high score.

@@ -5,10 +5,11 @@ import 'package:flutter/painting.dart';
 import '../game/erls_dino_game.dart';
 import '../game/world.dart';
 import 'dino.dart';
+import 'tintable.dart';
 
 /// Shared behaviour for every scrolling obstacle.
 abstract class Obstacle extends SpriteComponent
-    with HasGameReference<ErlsDinoGame>, CollisionCallbacks {
+    with HasGameReference<ErlsDinoGame>, CollisionCallbacks, Tintable {
   Obstacle({
     required this.spritePath,
     required Vector2 size,

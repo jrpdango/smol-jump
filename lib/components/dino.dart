@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 
 import '../game/erls_dino_game.dart';
 import '../game/world.dart';
+import 'tintable.dart';
 
 enum DinoState { idle, run, jump, dead }
 
@@ -11,7 +12,7 @@ enum DinoState { idle, run, jump, dead }
 /// the jump physics. Its hitbox is intentionally smaller than the sprite for
 /// fair collisions.
 class Dino extends SpriteAnimationComponent
-    with HasGameReference<ErlsDinoGame> {
+    with HasGameReference<ErlsDinoGame>, Tintable {
   Dino()
       : super(
           size: Vector2(48, 52),
