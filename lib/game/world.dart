@@ -33,9 +33,9 @@ class ErlsDinoWorld extends World
   /// Fixed horizontal position (bottom-center) of the dino.
   static const double dinoX = 40;
 
-  static const double baseSpeed = 55;
-  static const double maxSpeed = 170;
-  static const double acceleration = 2.5;
+  static const double baseSpeed = 120;
+  static const double maxSpeed = 230;
+  static const double acceleration = 3;
 
   late final Dino dino = Dino();
   late final Ground ground = Ground();

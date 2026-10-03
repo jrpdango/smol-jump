@@ -11,9 +11,9 @@ import '../game/world.dart';
 class ObstacleSpawner extends Component with HasGameReference<ErlsDinoGame> {
   static const double spawnX = ErlsDinoWorld.groundRight + 6;
   static const double _garlicWeight = 0.6;
-  static const double _minGap = 70;
-  static const double _maxExtraGap = 80;
-  static const double _minDelay = 0.55;
+  static const double _minGap = 130;
+  static const double _maxExtraGap = 120;
+  static const double _minDelay = 0.6;
 
   final Random _random = Random();
   double _timeUntilSpawn = 0.6;
