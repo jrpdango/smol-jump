@@ -23,14 +23,11 @@ class Cloud extends SpriteComponent with HasGameReference<ErlsDinoGame> {
   @override
   void update(double dt) {
     super.update(dt);
-    if (!game.isRunning || game.isGameOver) {
-      return;
-    }
     position.x -= game.world.speed * speedMultiplier * dt;
     position.x = position.x.roundToDouble();
-    if (position.x + size.x < 0) {
+    if (position.x + size.x < ErlsDinoWorld.groundLeft) {
       position
-        ..x = (ErlsDinoWorld.virtualWidth + _random.nextDouble() * 40)
+        ..x = (ErlsDinoWorld.groundRight + _random.nextDouble() * 40)
             .roundToDouble()
         ..y = (16 + _random.nextDouble() * 70).roundToDouble();
     }

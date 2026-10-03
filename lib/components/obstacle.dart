@@ -41,7 +41,7 @@ abstract class Obstacle extends SpriteComponent
     }
     position.x -= game.world.speed * dt;
     position.x = position.x.roundToDouble();
-    if (position.x + size.x < -2) {
+    if (position.x + size.x < ErlsDinoWorld.groundLeft) {
       removeFromParent();
     }
   }
@@ -52,7 +52,7 @@ abstract class Obstacle extends SpriteComponent
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
-    if (other.parent is Dino) {
+    if (other is Dino) {
       game.dinoHit();
     }
   }

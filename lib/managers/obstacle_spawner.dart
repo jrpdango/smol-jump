@@ -9,7 +9,7 @@ import '../game/world.dart';
 
 /// Drives weighted obstacle spawning with a distance based gap.
 class ObstacleSpawner extends Component with HasGameReference<ErlsDinoGame> {
-  static const double spawnX = ErlsDinoWorld.virtualWidth + 4;
+  static const double spawnX = ErlsDinoWorld.groundRight + 6;
   static const double _garlicWeight = 0.6;
   static const double _minGap = 70;
   static const double _maxExtraGap = 80;

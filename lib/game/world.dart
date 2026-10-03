@@ -22,6 +22,14 @@ class ErlsDinoWorld extends World
   /// Y coordinate of the top of the ground / bottom of everything standing.
   static const double groundY = virtualHeight - groundHeight;
 
+  /// The ground/scene strip is drawn wider than the 180 virtual field so it
+  /// still covers the screen when integer zoom leaves visible area outside the
+  /// 9:16 field. `virtualWidth * 2` is the upper bound of the visible world
+  /// width for any integer zoom >= 1.
+  static const double groundWidth = virtualWidth * 2;
+  static const double groundLeft = virtualWidth / 2 - groundWidth / 2;
+  static const double groundRight = groundLeft + groundWidth;
+
   /// Fixed horizontal position (bottom-center) of the dino.
   static const double dinoX = 40;
 
@@ -40,9 +48,14 @@ class ErlsDinoWorld extends World
   Future<void> onLoad() async {
     final random = Random();
     await add(ground);
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 4; i++) {
       await add(
-        Cloud(position: Vector2(20 + i * 60.0, 18 + random.nextDouble() * 60)),
+        Cloud(
+          position: Vector2(
+            groundLeft + 40 + i * 80.0,
+            16 + random.nextDouble() * 70,
+          ),
+        ),
       );
     }
     await add(dino);
@@ -69,7 +82,7 @@ class ErlsDinoWorld extends World
     speed = baseSpeed;
     elapsed = 0;
     spawner.reset();
-    dino.startRunning();
+    dino.reset();
     ground.setScrollSpeed(speed);
   }
 }

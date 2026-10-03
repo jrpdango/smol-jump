@@ -8,8 +8,11 @@ import '../game/world.dart';
 class Ground extends ParallaxComponent {
   Ground()
       : super(
-          position: Vector2(0, ErlsDinoWorld.groundY),
-          size: Vector2(ErlsDinoWorld.virtualWidth, ErlsDinoWorld.groundHeight),
+          position: Vector2(ErlsDinoWorld.groundLeft, ErlsDinoWorld.groundY),
+          size: Vector2(
+            ErlsDinoWorld.groundWidth,
+            ErlsDinoWorld.groundHeight,
+          ),
           anchor: Anchor.topLeft,
         );
 
@@ -34,6 +37,6 @@ class Ground extends ParallaxComponent {
   }
 
   void setScrollSpeed(double speed) {
-    parallax?.baseVelocity = Vector2(-speed, 0);
+    parallax?.baseVelocity = Vector2(speed, 0);
   }
 }

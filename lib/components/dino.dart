@@ -80,6 +80,13 @@ class Dino extends SpriteAnimationComponent
     animation = _idleAnimation;
   }
 
+  void reset() {
+    _verticalVelocity = 0;
+    position.setValues(ErlsDinoWorld.dinoX, ErlsDinoWorld.groundY);
+    state = DinoState.run;
+    _applyAnimation();
+  }
+
   void _applyAnimation() {
     switch (state) {
       case DinoState.idle:
