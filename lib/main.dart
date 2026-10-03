@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'game/erls_dino_game.dart';
+import 'ui/game_over_overlay.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,5 +11,18 @@ void main() {
     const [DeviceOrientation.portraitUp],
   );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  runApp(GameWidget(game: ErlsDinoGame()));
+
+  final game = ErlsDinoGame();
+  runApp(
+    GameWidget<ErlsDinoGame>(
+      game: game,
+      overlayBuilderMap: {
+        ErlsDinoGame.overlayGameOver: (context, game) => GameOverOverlay(
+              score: game.score,
+              highScore: game.highScore,
+              onRestart: game.reset,
+            ),
+      },
+    ),
+  );
 }
