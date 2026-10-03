@@ -7,6 +7,7 @@ import '../components/celestial_body.dart';
 import '../components/cloud.dart';
 import '../components/dino.dart';
 import '../components/ground.dart';
+import '../components/night_outline.dart';
 import '../components/obstacle.dart';
 import '../components/scrolling_layer.dart';
 import '../components/sky.dart';
@@ -144,6 +145,7 @@ class ErlsDinoWorld extends World
   double _lastSun = -1;
   double _lastMoon = -1;
   double _lastNight = -1;
+  double _lastOutline = -1;
 
   double speed = baseSpeed;
   double elapsed = 0;
@@ -220,9 +222,18 @@ class ErlsDinoWorld extends World
       }
       dino.applyTint(tint);
     }
+    // The moonlight rim only appears at night, so the dino and hazards keep
+    // their daytime look until the cycle darkens.
+    final outline = NightOutline.opacityForNight(state.nightIntensity);
+    if (outline != _lastOutline) {
+      _lastOutline = outline;
+      dino.setOutlineIntensity(outline);
+    }
     // Obstacles and birds spawn mid-cycle, so tint them every frame.
     for (final obstacle in children.whereType<Obstacle>()) {
-      obstacle.applyTint(tint);
+      obstacle
+        ..applyTint(tint)
+        ..setOutlineIntensity(outline);
     }
     for (final bird in children.whereType<Bird>()) {
       bird.applyTint(tint);
@@ -316,6 +327,7 @@ class ErlsDinoWorld extends World
     _lastSun = -1;
     _lastMoon = -1;
     _lastNight = -1;
+    _lastOutline = -1;
     _applyDayNight(_cycle.stateAt(0));
   }
 }

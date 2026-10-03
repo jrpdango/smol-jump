@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 
 import '../game/erls_dino_game.dart';
 import '../game/world.dart';
+import 'night_outline.dart';
 import 'tintable.dart';
 
 enum DinoState { idle, run, jump, dead }
@@ -12,7 +13,7 @@ enum DinoState { idle, run, jump, dead }
 /// the jump physics. Its hitbox is intentionally smaller than the sprite for
 /// fair collisions.
 class Dino extends SpriteAnimationComponent
-    with HasGameReference<ErlsDinoGame>, Tintable {
+    with HasGameReference<ErlsDinoGame>, Tintable, NightOutline {
   Dino()
       : super(
           size: Vector2(48, 52),
@@ -39,6 +40,9 @@ class Dino extends SpriteAnimationComponent
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;
   late final SpriteAnimation _jumpAnimation;
+
+  @override
+  Sprite? get outlineSprite => animationTicker?.getSprite();
 
   DinoState state = DinoState.idle;
   double _verticalVelocity = 0;

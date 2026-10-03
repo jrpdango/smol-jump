@@ -5,11 +5,13 @@ import 'package:flutter/painting.dart';
 import '../game/erls_dino_game.dart';
 import '../game/world.dart';
 import 'dino.dart';
+import 'night_outline.dart';
 import 'tintable.dart';
 
 /// Shared behaviour for every scrolling obstacle.
 abstract class Obstacle extends SpriteComponent
-    with HasGameReference<ErlsDinoGame>, CollisionCallbacks, Tintable {
+    with HasGameReference<ErlsDinoGame>, CollisionCallbacks, Tintable,
+        NightOutline {
   Obstacle({
     required this.spritePath,
     required Vector2 size,
@@ -25,6 +27,9 @@ abstract class Obstacle extends SpriteComponent
   /// How far the sprite's bottom sits above the ground. Ground obstacles use 0;
   /// aerial hazards float above the running dino.
   final double groundOffset;
+
+  @override
+  Sprite? get outlineSprite => sprite;
 
   @override
   Future<void> onLoad() async {
