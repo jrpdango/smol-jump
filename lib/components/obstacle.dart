@@ -25,13 +25,21 @@ abstract class Obstacle extends SpriteComponent
     paint.filterQuality = FilterQuality.none;
     sprite = Sprite(await game.images.load(spritePath));
     position.y = ErlsDinoWorld.groundY;
-    add(
-      RectangleHitbox(
-        position: Vector2(size.x * 0.20, size.y * 0.08),
-        size: Vector2(size.x * 0.60, size.y * 0.80),
-      ),
-    );
+    for (final hitbox in buildHitboxes()) {
+      add(hitbox);
+    }
   }
+
+  /// The collision shape(s) for this obstacle, in sprite-local pixels.
+  ///
+  /// Override to follow the sprite silhouette instead of settling for a
+  /// rectangle that also covers transparent corners.
+  Iterable<ShapeHitbox> buildHitboxes() => [
+        RectangleHitbox(
+          position: Vector2(size.x * 0.20, size.y * 0.08),
+          size: Vector2(size.x * 0.60, size.y * 0.80),
+        ),
+      ];
 
   @override
   void update(double dt) {

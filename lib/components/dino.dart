@@ -21,6 +21,17 @@ class Dino extends SpriteAnimationComponent
   static const double gravity = 1500;
   static const double jumpVelocity = -500;
 
+  /// The dino's collision shape, in sprite-local pixels. The bottom-left
+  /// corner is trimmed so the empty gap between the legs cannot be hit.
+  static ShapeHitbox createHitbox() => PolygonHitbox([
+        Vector2(14, 16), // upper body, left
+        Vector2(34, 16), // upper body, right
+        Vector2(34, 48), // bottom of the right leg
+        Vector2(18, 48), // trimmed corner
+        Vector2(18, 43),
+        Vector2(14, 43),
+      ]);
+
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;
   late final SpriteAnimation _jumpAnimation;
@@ -47,12 +58,7 @@ class Dino extends SpriteAnimationComponent
     animation = _idleAnimation;
     position = Vector2(ErlsDinoWorld.dinoX, ErlsDinoWorld.groundY);
 
-    add(
-      RectangleHitbox(
-        position: Vector2(14, 16),
-        size: Vector2(20, 32),
-      ),
-    );
+    add(createHitbox());
   }
 
   void startRunning() {
