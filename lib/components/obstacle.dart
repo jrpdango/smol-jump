@@ -27,8 +27,8 @@ abstract class Obstacle extends SpriteComponent
     position.y = ErlsDinoWorld.groundY;
     add(
       RectangleHitbox(
-        position: Vector2(size.x * 0.12, 0),
-        size: Vector2(size.x * 0.76, size.y * 0.94),
+        position: Vector2(size.x * 0.20, size.y * 0.08),
+        size: Vector2(size.x * 0.60, size.y * 0.80),
       ),
     );
   }

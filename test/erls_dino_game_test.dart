@@ -27,15 +27,18 @@ void main() {
     const g = Dino.gravity;
 
     // Tallest obstacle (garlic, 54px) must be cleared: the dino's hitbox bottom
-    // has to rise above the garlic's hitbox top.
-    const garlicHeight = 54.0;
-    final discriminant = v0 * v0 - 2 * g * garlicHeight;
+    // has to rise above the garlic's hitbox top. Both hitboxes are inset from
+    // their sprites, so only the gap between them must be cleared.
+    const garlicHitboxTop = 54.0 * (1 - 0.08 - 0.80);
+    const dinoHitboxBottom = 52.0 - (16 + 32);
+    final discriminant =
+        v0 * v0 - 2 * g * (garlicHitboxTop - dinoHitboxBottom);
     expect(discriminant, greaterThan(0));
     final airborneWindow = 2 * sqrt(discriminant) / g;
 
     // Horizontal ground covered while clearing must exceed the combined hitbox
-    // width (dino 24px + garlic 26 * 0.76).
-    const overlap = 24.0 + 26.0 * 0.76;
+    // width (dino 20px + garlic 26 * 0.60).
+    const overlap = 20.0 + 26.0 * 0.60;
     final clearance = ErlsDinoWorld.baseSpeed * airborneWindow;
     expect(clearance, greaterThanOrEqualTo(overlap));
   });

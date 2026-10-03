@@ -49,8 +49,8 @@ class Dino extends SpriteAnimationComponent
 
     add(
       RectangleHitbox(
-        position: Vector2(13, 12),
-        size: Vector2(24, 40),
+        position: Vector2(14, 16),
+        size: Vector2(20, 32),
       ),
     );
   }
