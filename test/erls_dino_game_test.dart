@@ -39,8 +39,8 @@ void main() {
     final airborneWindow = 2 * sqrt(discriminant) / g;
 
     // Horizontal ground covered while clearing must exceed the combined hitbox
-    // width (dino 20px wide + garlic 23px wide at its widest).
-    const overlap = 20.0 + 23.0;
+    // width (dino 20px wide + garlic 26px wide at its widest).
+    const overlap = 20.0 + 26.0;
     final clearance = ErlsDinoWorld.baseSpeed * airborneWindow;
     expect(clearance, greaterThanOrEqualTo(overlap));
   });

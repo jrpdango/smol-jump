@@ -13,10 +13,10 @@ void main() {
         Garlic(position: Vector2.zero()).buildHitboxes().first as PolygonHitbox;
 
     // Empty space beside the stem must not be collidable.
-    expect(hitbox.containsPoint(Vector2(20, 6)), isFalse);
-    // The stem and the bulb must be collidable.
-    expect(hitbox.containsPoint(Vector2(13, 3)), isTrue);
-    expect(hitbox.containsPoint(Vector2(20, 40)), isTrue);
+    expect(hitbox.containsPoint(Vector2(22, 6)), isFalse);
+    // The stem and the bulb (now widest at x27) must be collidable.
+    expect(hitbox.containsPoint(Vector2(14, 3)), isTrue);
+    expect(hitbox.containsPoint(Vector2(26, 42)), isTrue);
     expect(hitbox.containsPoint(Vector2(13, 40)), isTrue);
   });
 
@@ -27,7 +27,9 @@ void main() {
 
     // Empty top corner must not be collidable.
     expect(hitbox.containsPoint(Vector2(2, 4)), isFalse);
-    // The wide middle and the tapered base must be collidable.
+    // The wide middle (now widest at x20) and the tapered base must be
+    // collidable.
+    expect(hitbox.containsPoint(Vector2(19, 9)), isTrue);
     expect(hitbox.containsPoint(Vector2(9, 12)), isTrue);
     expect(hitbox.containsPoint(Vector2(9, 35)), isTrue);
   });

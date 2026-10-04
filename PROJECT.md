@@ -33,8 +33,8 @@ engine handles upscaling via integer zoom.
 | Dino idle     | `erls-idle.png`                      | 48 x 52  |
 | Dino run      | `erls-run-01.png`, `erls-run-02.png` | 48 x 52  |
 | Dino jump     | `erls-jump.png`                      | 48 x 52  |
-| Garlic        | `garlic.png`                         | 26 x 54  |
-| Mint-choco    | `mint-choco.png`                     | 18 x 38  |
+| Garlic        | `garlic.png`                         | 29 x 54  |
+| Mint-choco    | `mint-choco.png`                     | 21 x 39  |
 | Cloud (near)  | `cloud-near-01.png`, `cloud-near-02.png` | 46 x 14 |
 | Cloud (far)   | `cloud-far-01.png`, `cloud-far-02.png`   | 30 x 10 |
 | Hills (far)   | `hills-far-01.png`                   | 180 x 56 |
