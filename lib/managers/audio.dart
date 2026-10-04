@@ -17,6 +17,7 @@ class AudioManager {
   AudioManager({
     this.jumpAsset = 'assets/audio/jump.wav',
     this.landAsset = 'assets/audio/land.wav',
+    this.hurtAsset = 'assets/audio/hurt.wav',
     this.loseAsset = 'assets/audio/lose.wav',
     this.selectAsset = 'assets/audio/select.wav',
     this.volume = 0.8,
@@ -43,6 +44,7 @@ class AudioManager {
 
   final String jumpAsset;
   final String landAsset;
+  final String hurtAsset;
   final String loseAsset;
   final String selectAsset;
   final double volume;
@@ -53,6 +55,7 @@ class AudioManager {
 
   AudioSource? _jump;
   AudioSource? _land;
+  AudioSource? _hurt;
   AudioSource? _lose;
   AudioSource? _select;
   SoundHandle? _loseHandle;
@@ -77,55 +80,64 @@ class AudioManager {
       }
       _jump = await _soloud.loadAsset(jumpAsset);
       _land = await _soloud.loadAsset(landAsset);
+      _hurt = await _soloud.loadAsset(hurtAsset);
       _lose = await _soloud.loadAsset(loseAsset);
       _select = await _soloud.loadAsset(selectAsset);
     } catch (_) {
       _enabled = false;
       _jump = null;
       _land = null;
+      _hurt = null;
       _lose = null;
       _select = null;
     }
   }
 
   void playJump() => _guard(() {
-        final source = _jump;
-        if (source != null) {
-          _soloud.play(source, volume: volume);
-        }
-      });
+    final source = _jump;
+    if (source != null) {
+      _soloud.play(source, volume: volume);
+    }
+  });
 
   void playLand() => _guard(() {
-        final source = _land;
-        if (source != null) {
-          _soloud.play(source, volume: volume);
-        }
-      });
+    final source = _land;
+    if (source != null) {
+      _soloud.play(source, volume: volume);
+    }
+  });
+
+  void playHurt() => _guard(() {
+    final source = _hurt;
+    if (source != null) {
+      _soloud.play(source, volume: volume);
+    }
+  });
 
   /// Plays the game-over sting, replacing any sting still playing.
   void playLose() => _guard(() {
-        final previous = _loseHandle;
-        if (previous != null && _soloud.getIsValidVoiceHandle(previous)) {
-          unawaited(_soloud.stop(previous));
-        }
-        final source = _lose;
-        if (source != null) {
-          _loseHandle = _soloud.play(source, volume: volume);
-        }
-      });
+    final previous = _loseHandle;
+    if (previous != null && _soloud.getIsValidVoiceHandle(previous)) {
+      unawaited(_soloud.stop(previous));
+    }
+    final source = _lose;
+    if (source != null) {
+      _loseHandle = _soloud.play(source, volume: volume);
+    }
+  });
 
   /// Plays the menu selection blip, replacing any blip still playing so rapid
   /// taps do not stack.
   void playSelect() => _guard(() {
-        final previous = _selectHandle;
-        if (previous != null && _soloud.getIsValidVoiceHandle(previous)) {
-          unawaited(_soloud.stop(previous));
-        }
-        final source = _select;
-        if (source != null) {
-          _selectHandle = _soloud.play(source, volume: volume);
-        }
-      });
+    final previous = _selectHandle;
+    if (previous != null && _soloud.getIsValidVoiceHandle(previous)) {
+      unawaited(_soloud.stop(previous));
+    }
+    final source = _select;
+    if (source != null) {
+      _selectHandle = _soloud.play(source, volume: volume);
+    }
+  });
 
   /// Stops one-shots that outlive a run.
   Future<void> stopAll() async {
