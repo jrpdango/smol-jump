@@ -101,6 +101,7 @@ class Dino extends SpriteAnimationComponent
     state = DinoState.jump;
     _verticalVelocity = jumpVelocity;
     _applyAnimation();
+    game.audio.playJump();
   }
 
   void die() {
@@ -154,6 +155,7 @@ class Dino extends SpriteAnimationComponent
         _verticalVelocity = 0;
         state = DinoState.run;
         _applyAnimation();
+        game.audio.playLand();
       }
     }
 

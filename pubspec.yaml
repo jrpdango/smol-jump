@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flame: ^1.38.2
   shared_preferences: ^2.5.5
-  flame_audio: ^2.12.2
+  flutter_soloud: ^5.1.6
 
 dev_dependencies:
   flutter_test:
@@ -89,3 +89,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# We only ship PCM WAV sound effects, so skip the optional Xiph codecs
+# (Ogg/Opus/Vorbis/FLAC). WAV, MP3 and synthesis remain available.
+hooks:
+  user_defines:
+    flutter_soloud:
+      no_xiph_libs: true

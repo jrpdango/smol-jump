@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' show KeyEventResult;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../managers/audio.dart';
 import '../managers/score.dart';
 import 'world.dart';
 
@@ -21,12 +24,16 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
   bool isGameOver = false;
 
   late final ScoreManager _scoreManager;
+  final AudioManager audio = AudioManager();
 
   @override
   Color backgroundColor() => const Color(0xFF9AD5E8);
 
   @override
   Future<void> onLoad() async {
+    // Kick off audio pre-loading without blocking the first frame; play calls
+    // are no-ops until it completes (and stay silent if it fails).
+    unawaited(audio.load());
     await super.onLoad();
 
     camera.viewfinder
@@ -96,6 +103,7 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
     isGameOver = true;
     isRunning = false;
     world.dino.die();
+    audio.playLose();
     if (score > highScore) {
       highScore = score;
       _persistHighScore(highScore);
@@ -109,9 +117,16 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
     score = 0;
     isGameOver = false;
     isRunning = true;
+    unawaited(audio.stopAll());
     world.reset();
     _scoreManager.reset();
     resumeEngine();
+  }
+
+  @override
+  void onRemove() {
+    unawaited(audio.dispose());
+    super.onRemove();
   }
 
   Future<void> _loadHighScore() async {

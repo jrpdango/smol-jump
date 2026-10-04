@@ -20,7 +20,7 @@ Android phones.
 flutter create --project-name erls_dino --platforms android --org com.erls erls_dino
 cd erls_dino
 flutter pub add flame
-# optional: flutter pub add flame_audio shared_preferences
+# optional: flutter pub add flutter_soloud shared_preferences
 ```
 Lock the app to portrait in `AndroidManifest.xml` / `SystemChrome`.
 
@@ -129,7 +129,7 @@ lib/
     game_over_overlay.dart
 assets/
   images/*.png               # one PNG per frame (e.g. erls-run-01.png)
-  audio/*.ogg                # optional sfx
+  audio/*.wav                # sfx via flutter_soloud: jump/land/lose
 ```
 
 ## Gameplay scope
