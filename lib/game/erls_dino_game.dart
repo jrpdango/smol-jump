@@ -12,16 +12,34 @@ import '../managers/audio.dart';
 import '../managers/score.dart';
 import 'world.dart';
 
+/// The high-level screen the game is currently on.
+enum GamePhase { menu, ready, playing, paused, gameOver }
+
 class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
   ErlsDinoGame() : super(world: ErlsDinoWorld());
 
+  static const String overlayMainMenu = 'mainMenu';
+  static const String overlayStartPrompt = 'startPrompt';
+  static const String overlayPause = 'pause';
+  static const String overlayPauseButton = 'pauseButton';
   static const String overlayGameOver = 'gameOver';
+
   static const String _highScoreKey = 'erls_dino.high_score';
 
   int score = 0;
   int highScore = 0;
-  bool isRunning = false;
-  bool isGameOver = false;
+
+  /// Whether the run that just ended set a new personal best (drives the
+  /// "NEW BEST!" banner on the game-over screen).
+  bool lastRunNewBest = false;
+
+  GamePhase phase = GamePhase.menu;
+
+  /// Kept as getters so every component guard keeps its original meaning:
+  /// paused/menu/ready all read as "not running", and only a death counts as
+  /// game over.
+  bool get isRunning => phase == GamePhase.playing;
+  bool get isGameOver => phase == GamePhase.gameOver;
 
   late final ScoreManager _scoreManager;
   final AudioManager audio = AudioManager();
@@ -48,6 +66,8 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
     await camera.viewport.add(_TapInput(this));
 
     await _loadHighScore();
+
+    phase = GamePhase.menu;
   }
 
   @override
@@ -74,53 +94,136 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.escape || key == LogicalKeyboardKey.keyP) {
+      if (phase == GamePhase.playing) {
+        pauseGame();
+        return KeyEventResult.handled;
+      }
+      if (phase == GamePhase.paused) {
+        resumeGame();
+        return KeyEventResult.handled;
+      }
+    }
     if (key == LogicalKeyboardKey.space ||
         key == LogicalKeyboardKey.arrowUp ||
         key == LogicalKeyboardKey.enter ||
         key == LogicalKeyboardKey.numpadEnter) {
-      _primaryAction();
+      primaryAction();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
   }
 
-  void _primaryAction() {
-    if (isGameOver) {
-      reset();
+  /// The tap/space action, routed by the current phase.
+  void primaryAction() {
+    switch (phase) {
+      case GamePhase.playing:
+        world.dino.jump();
+      case GamePhase.ready:
+        beginRun();
+      case GamePhase.menu:
+      case GamePhase.paused:
+      case GamePhase.gameOver:
+        break;
+    }
+  }
+
+  /// "Play" from the main menu: show the Tap to Start prompt, world stays idle.
+  void startGame() {
+    if (phase != GamePhase.menu) {
       return;
     }
-    if (!isRunning) {
-      isRunning = true;
-      world.dino.startRunning();
+    overlays.remove(overlayMainMenu);
+    overlays.add(overlayStartPrompt);
+    phase = GamePhase.ready;
+  }
+
+  /// The first tap of a run: start scrolling and make the dino leap, which is
+  /// what the "Tap to Start" instruction promises.
+  void beginRun() {
+    if (phase != GamePhase.ready) {
+      return;
     }
+    overlays.remove(overlayStartPrompt);
+    overlays.add(overlayPauseButton);
+    phase = GamePhase.playing;
+    world.dino.startRunning();
     world.dino.jump();
+  }
+
+  void pauseGame() {
+    if (phase != GamePhase.playing) {
+      return;
+    }
+    phase = GamePhase.paused;
+    overlays.remove(overlayPauseButton);
+    overlays.add(overlayPause);
+    pauseEngine();
+  }
+
+  void resumeGame() {
+    if (phase != GamePhase.paused) {
+      return;
+    }
+    overlays.remove(overlayPause);
+    overlays.add(overlayPauseButton);
+    phase = GamePhase.playing;
+    resumeEngine();
+  }
+
+  /// Restart immediately from pause or game over.
+  void restartGame() {
+    if (phase != GamePhase.paused && phase != GamePhase.gameOver) {
+      return;
+    }
+    overlays.remove(overlayPause);
+    overlays.remove(overlayGameOver);
+    _resetRunState(running: true);
+    phase = GamePhase.playing;
+    overlays.add(overlayPauseButton);
+    resumeEngine();
+  }
+
+  /// Return to the main menu, discarding the current run.
+  void goToMenu() {
+    overlays
+      ..remove(overlayPause)
+      ..remove(overlayGameOver)
+      ..remove(overlayPauseButton)
+      ..remove(overlayStartPrompt)
+      ..add(overlayMainMenu);
+    _resetRunState(running: false);
+    phase = GamePhase.menu;
+    resumeEngine();
   }
 
   void dinoHit() {
     if (isGameOver) {
       return;
     }
-    isGameOver = true;
-    isRunning = false;
+    phase = GamePhase.gameOver;
     world.dino.die();
     audio.playLose();
-    if (score > highScore) {
+    lastRunNewBest = score > highScore;
+    if (lastRunNewBest) {
       highScore = score;
       _persistHighScore(highScore);
     }
+    overlays.remove(overlayPauseButton);
     overlays.add(overlayGameOver);
     pauseEngine();
   }
 
-  void reset() {
-    overlays.remove(overlayGameOver);
+  /// Clears the world and score so the next screen starts clean. [running]
+  /// leaves the dino mid-run (restart) vs. back in its idle menu pose.
+  void _resetRunState({required bool running}) {
     score = 0;
-    isGameOver = false;
-    isRunning = true;
     unawaited(audio.stopAll());
     world.reset();
     _scoreManager.reset();
-    resumeEngine();
+    if (!running) {
+      world.dino.resetToIdle();
+    }
   }
 
   @override
@@ -170,5 +273,5 @@ class _TapInput extends PositionComponent with TapCallbacks {
   }
 
   @override
-  void onTapDown(TapDownEvent event) => _game._primaryAction();
+  void onTapDown(TapDownEvent event) => _game.primaryAction();
 }

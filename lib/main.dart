@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'game/erls_dino_game.dart';
-import 'ui/game_over_overlay.dart';
+import 'ui/overlays.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,13 +16,8 @@ void main() {
   runApp(
     GameWidget<ErlsDinoGame>(
       game: game,
-      overlayBuilderMap: {
-        ErlsDinoGame.overlayGameOver: (context, game) => GameOverOverlay(
-              score: game.score,
-              highScore: game.highScore,
-              onRestart: game.reset,
-            ),
-      },
+      overlayBuilderMap: buildOverlayBuilderMap(),
+      initialActiveOverlays: const [ErlsDinoGame.overlayMainMenu],
     ),
   );
 }

@@ -130,6 +130,14 @@ class Dino extends SpriteAnimationComponent
     _applyAnimation();
   }
 
+  /// Returns the dino to its grounded idle pose, used by the main menu.
+  void resetToIdle() {
+    _verticalVelocity = 0;
+    position.setValues(ErlsDinoWorld.dinoX, ErlsDinoWorld.groundY);
+    state = DinoState.idle;
+    _applyAnimation();
+  }
+
   void _applyAnimation() {
     switch (state) {
       case DinoState.idle:
