@@ -42,7 +42,7 @@ class SmolJumpWorld extends World
   static const double dinoX = 40;
 
   static const double baseSpeed = 120;
-  static const double maxSpeed = 270;
+  static const double maxSpeed = 230;
 
   /// Time to ease from [baseSpeed] to [maxSpeed]. The curve starts and ends
   /// with zero slope so the acceleration never feels abrupt.
