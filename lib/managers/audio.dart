@@ -18,9 +18,18 @@ class AudioManager {
     this.jumpAsset = 'assets/audio/jump.wav',
     this.landAsset = 'assets/audio/land.wav',
     this.loseAsset = 'assets/audio/lose.wav',
+    this.selectAsset = 'assets/audio/select.wav',
     this.volume = 0.8,
     bool? enabled,
   }) : _enabled = enabled ?? _platformSupportsAudio();
+
+  /// How long the output device stays running after the engine goes idle.
+  ///
+  /// SoLoud's default is 500 ms, which is shorter than a typical pause on a
+  /// menu: the device stops, and the next sound restarts it, so its attack is
+  /// smeared into what sounds like a fade-in. A longer window keeps the device
+  /// warm across menu interaction while still releasing it once truly idle.
+  static const Duration idleTimeout = Duration(seconds: 10);
 
   /// Native audio is unavailable under `flutter test`, where `SoLoud.init`
   /// cannot resolve the native library. Detect that case (and allow explicit
@@ -35,6 +44,7 @@ class AudioManager {
   final String jumpAsset;
   final String landAsset;
   final String loseAsset;
+  final String selectAsset;
   final double volume;
 
   /// Accessed lazily so merely constructing an [AudioManager] never touches the
@@ -44,7 +54,9 @@ class AudioManager {
   AudioSource? _jump;
   AudioSource? _land;
   AudioSource? _lose;
+  AudioSource? _select;
   SoundHandle? _loseHandle;
+  SoundHandle? _selectHandle;
 
   bool _enabled;
   bool _disposed = false;
@@ -61,15 +73,18 @@ class AudioManager {
     try {
       if (!_soloud.isInitialized) {
         await _soloud.init();
+        _soloud.setAudioDeviceIdleTimeout(idleTimeout);
       }
       _jump = await _soloud.loadAsset(jumpAsset);
       _land = await _soloud.loadAsset(landAsset);
       _lose = await _soloud.loadAsset(loseAsset);
+      _select = await _soloud.loadAsset(selectAsset);
     } catch (_) {
       _enabled = false;
       _jump = null;
       _land = null;
       _lose = null;
+      _select = null;
     }
   }
 
@@ -96,6 +111,19 @@ class AudioManager {
         final source = _lose;
         if (source != null) {
           _loseHandle = _soloud.play(source, volume: volume);
+        }
+      });
+
+  /// Plays the menu selection blip, replacing any blip still playing so rapid
+  /// taps do not stack.
+  void playSelect() => _guard(() {
+        final previous = _selectHandle;
+        if (previous != null && _soloud.getIsValidVoiceHandle(previous)) {
+          unawaited(_soloud.stop(previous));
+        }
+        final source = _select;
+        if (source != null) {
+          _selectHandle = _soloud.play(source, volume: volume);
         }
       });
 
