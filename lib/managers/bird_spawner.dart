@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:flame/components.dart';
 
 import '../components/bird.dart';
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 import '../game/world.dart';
 
 /// Spawns decorative flocks of [Bird]s at random intervals. Birds are added
 /// directly to the world (not as children) so their render priority places them
 /// behind the clouds.
-class BirdSpawner extends Component with HasGameReference<ErlsDinoGame> {
+class BirdSpawner extends Component with HasGameReference<SmolJumpGame> {
   BirdSpawner({Random? random}) : _random = random ?? Random();
 
   final Random _random;
@@ -18,7 +18,7 @@ class BirdSpawner extends Component with HasGameReference<ErlsDinoGame> {
   static const double maxInterval = 9.0;
   static const double minY = 55;
   static const double maxY = 145;
-  static const double spawnX = ErlsDinoWorld.groundRight + 20;
+  static const double spawnX = SmolJumpWorld.groundRight + 20;
 
   double _timer = 0;
   double _next = 0;

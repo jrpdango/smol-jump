@@ -1,5 +1,5 @@
-import 'package:erls_dino/components/dino.dart';
-import 'package:erls_dino/components/night_outline.dart';
+import 'package:smol_jump/components/dino.dart';
+import 'package:smol_jump/components/night_outline.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

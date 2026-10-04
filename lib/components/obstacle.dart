@@ -2,7 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 import '../game/world.dart';
 import 'dino.dart';
 import 'night_outline.dart';
@@ -10,7 +10,7 @@ import 'tintable.dart';
 
 /// Shared behaviour for every scrolling obstacle.
 abstract class Obstacle extends SpriteComponent
-    with HasGameReference<ErlsDinoGame>, CollisionCallbacks, Tintable,
+    with HasGameReference<SmolJumpGame>, CollisionCallbacks, Tintable,
         NightOutline {
   Obstacle({
     required this.spritePath,
@@ -35,7 +35,7 @@ abstract class Obstacle extends SpriteComponent
   Future<void> onLoad() async {
     paint.filterQuality = FilterQuality.none;
     sprite = Sprite(await game.images.load(spritePath));
-    position.y = ErlsDinoWorld.groundY - groundOffset;
+    position.y = SmolJumpWorld.groundY - groundOffset;
     for (final hitbox in buildHitboxes()) {
       add(hitbox);
     }
@@ -59,7 +59,7 @@ abstract class Obstacle extends SpriteComponent
       return;
     }
     position.x -= game.world.speed * dt;
-    if (position.x + size.x < ErlsDinoWorld.groundLeft) {
+    if (position.x + size.x < SmolJumpWorld.groundLeft) {
       removeFromParent();
     }
   }

@@ -12,12 +12,12 @@ class Sky extends RectangleComponent {
   Sky()
       : super(
           position: Vector2(
-            ErlsDinoWorld.groundLeft,
-            -ErlsDinoWorld.virtualHeight,
+            SmolJumpWorld.groundLeft,
+            -SmolJumpWorld.virtualHeight,
           ),
           size: Vector2(
-            ErlsDinoWorld.groundWidth,
-            ErlsDinoWorld.virtualHeight * 2,
+            SmolJumpWorld.groundWidth,
+            SmolJumpWorld.virtualHeight * 2,
           ),
           priority: -10,
         );

@@ -1,6 +1,6 @@
-import 'package:erls_dino/components/dino.dart';
-import 'package:erls_dino/components/garlic.dart';
-import 'package:erls_dino/components/mint_choco.dart';
+import 'package:smol_jump/components/dino.dart';
+import 'package:smol_jump/components/garlic.dart';
+import 'package:smol_jump/components/mint_choco.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter_test/flutter_test.dart';

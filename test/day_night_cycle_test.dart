@@ -1,4 +1,4 @@
-import 'package:erls_dino/managers/day_night_cycle.dart';
+import 'package:smol_jump/managers/day_night_cycle.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

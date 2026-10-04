@@ -1,4 +1,4 @@
-# erls_dino — Build Spec
+# Smol Jump — Build Spec
 
 Reference doc for the build session. Recreates the Chrome offline dinosaur
 ("T-Rex runner") game with custom sprites, using Flame on Flutter, targeting
@@ -13,12 +13,12 @@ Android phones.
   no pre-scaling in the art tool. Flame upscales with an integer zoom, so each
   virtual pixel becomes 6 physical px on 1080p phones (zoom 6), 4 px on 720p
   (zoom 4), etc. Never fractional.
-- Package/directory name: `erls_dino`.
+- Package/directory name: `smol_jump`.
 
 ## Bootstrap
 ```
-flutter create --project-name erls_dino --platforms android --org com.erls erls_dino
-cd erls_dino
+flutter create --project-name smol_jump --platforms android --org com.jrpdango smol_jump
+cd smol_jump
 flutter pub add flame
 # optional: flutter pub add flutter_soloud shared_preferences
 ```
@@ -105,7 +105,7 @@ near) -> clouds (far, near) -> birds -> ground -> dino/obstacles.
 lib/
   main.dart
   game/
-    erls_dino_game.dart      # FlameGame: camera, pixel-perfect zoom, state
+    smol_jump_game.dart      # FlameGame: camera, pixel-perfect zoom, state
     world.dart               # World: layers, spawners, day/night cycle
   components/
     dino.dart                # state machine: idle/run/jump/dead

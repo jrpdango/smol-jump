@@ -2,14 +2,14 @@ import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 import '../ui/ui_theme.dart';
 
 /// Distance-based score HUD. Lives on the camera viewport so the camera's zoom
 /// does not affect it, and stacks a small "HI" line over a large, outlined
 /// current score so it stays legible over both the day and night skies.
 class ScoreManager extends PositionComponent
-    with HasGameReference<ErlsDinoGame> {
+    with HasGameReference<SmolJumpGame> {
   ScoreManager()
       : super(
           anchor: Anchor.topRight,

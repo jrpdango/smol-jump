@@ -1,4 +1,4 @@
-package com.erls.erls_dino
+package com.jrpdango.smol_jump
 
 import io.flutter.embedding.android.FlutterActivity
 

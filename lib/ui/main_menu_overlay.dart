@@ -23,8 +23,8 @@ class MainMenuOverlay extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('ERLS', style: UiTheme.title),
-                const Text('DINO', style: UiTheme.title),
+                const Text('SMOL', style: UiTheme.title),
+                const Text('JUMP', style: UiTheme.title),
                 const SizedBox(height: 10),
                 const Text('TIPPY TAPPY', style: UiTheme.body),
                 const SizedBox(height: 36),

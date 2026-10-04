@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 
 /// A horizontally scrolling, seamlessly tiled sprite layer.
 ///
@@ -10,7 +10,7 @@ import '../game/erls_dino_game.dart';
 /// `modulate` color filter, so a day/night cycle can shift its mood without
 /// separate art.
 class ScrollingLayer extends PositionComponent
-    with HasGameReference<ErlsDinoGame> {
+    with HasGameReference<SmolJumpGame> {
   ScrollingLayer({
     required this.asset,
     required Vector2 position,

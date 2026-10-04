@@ -4,7 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 import '../game/world.dart';
 import 'night_outline.dart';
 import 'tintable.dart';
@@ -15,7 +15,7 @@ enum DinoState { idle, run, jump, dead }
 /// the jump physics. Its hitbox is intentionally smaller than the sprite for
 /// fair collisions.
 class Dino extends SpriteAnimationComponent
-    with HasGameReference<ErlsDinoGame>, Tintable, NightOutline {
+    with HasGameReference<SmolJumpGame>, Tintable, NightOutline {
   Dino()
       : super(
           size: Vector2(48, 52),
@@ -79,7 +79,7 @@ class Dino extends SpriteAnimationComponent
     _deadAnimation = _deadAnimations.first;
 
     animation = _idleAnimation;
-    position = Vector2(ErlsDinoWorld.dinoX, ErlsDinoWorld.groundY);
+    position = Vector2(SmolJumpWorld.dinoX, SmolJumpWorld.groundY);
 
     add(createHitbox());
   }
@@ -90,7 +90,7 @@ class Dino extends SpriteAnimationComponent
     }
     state = DinoState.run;
     _verticalVelocity = 0;
-    position.y = ErlsDinoWorld.groundY;
+    position.y = SmolJumpWorld.groundY;
     _applyAnimation();
   }
 
@@ -125,7 +125,7 @@ class Dino extends SpriteAnimationComponent
 
   void reset() {
     _verticalVelocity = 0;
-    position.setValues(ErlsDinoWorld.dinoX, ErlsDinoWorld.groundY);
+    position.setValues(SmolJumpWorld.dinoX, SmolJumpWorld.groundY);
     state = DinoState.run;
     _applyAnimation();
   }
@@ -133,7 +133,7 @@ class Dino extends SpriteAnimationComponent
   /// Returns the dino to its grounded idle pose, used by the main menu.
   void resetToIdle() {
     _verticalVelocity = 0;
-    position.setValues(ErlsDinoWorld.dinoX, ErlsDinoWorld.groundY);
+    position.setValues(SmolJumpWorld.dinoX, SmolJumpWorld.groundY);
     state = DinoState.idle;
     _applyAnimation();
   }
@@ -158,8 +158,8 @@ class Dino extends SpriteAnimationComponent
     if (state == DinoState.jump) {
       _verticalVelocity += gravity * dt;
       position.y += _verticalVelocity * dt;
-      if (position.y >= ErlsDinoWorld.groundY) {
-        position.y = ErlsDinoWorld.groundY;
+      if (position.y >= SmolJumpWorld.groundY) {
+        position.y = SmolJumpWorld.groundY;
         _verticalVelocity = 0;
         state = DinoState.run;
         _applyAnimation();
@@ -168,7 +168,7 @@ class Dino extends SpriteAnimationComponent
     }
 
     position
-      ..x = ErlsDinoWorld.dinoX
+      ..x = SmolJumpWorld.dinoX
       ..y = position.y.roundToDouble();
   }
 }

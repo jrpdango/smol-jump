@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 
 /// A star that fades in at night and twinkles.
 ///
 /// [setNight] carries the cycle's night intensity; the per-star [phase] offsets
 /// the twinkle so the field doesn't pulse in unison.
-class Star extends SpriteComponent with HasGameReference<ErlsDinoGame> {
+class Star extends SpriteComponent with HasGameReference<SmolJumpGame> {
   Star({
     required this.asset,
     required super.position,

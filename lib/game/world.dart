@@ -15,14 +15,14 @@ import '../components/star.dart';
 import '../managers/bird_spawner.dart';
 import '../managers/day_night_cycle.dart';
 import '../managers/obstacle_spawner.dart';
-import 'erls_dino_game.dart';
+import 'smol_jump_game.dart';
 
 /// The fixed virtual play field (180 x 320, 9:16 portrait).
 ///
 /// All gameplay coordinates are expressed in these virtual pixels; the camera
 /// applies an integer zoom so every virtual pixel maps to whole screen pixels.
-class ErlsDinoWorld extends World
-    with HasCollisionDetection, HasGameReference<ErlsDinoGame> {
+class SmolJumpWorld extends World
+    with HasCollisionDetection, HasGameReference<SmolJumpGame> {
   static const double virtualWidth = 180;
   static const double virtualHeight = 320;
   static const double groundHeight = 12;

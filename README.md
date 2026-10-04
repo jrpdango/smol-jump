@@ -1,6 +1,6 @@
-# erls_dino
+# Smol Jump
 
-A new Flutter project.
+A tiny pixel-art endless runner built with Flame on Flutter.
 
 ## Getting Started
 

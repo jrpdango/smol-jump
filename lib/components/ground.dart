@@ -8,10 +8,10 @@ class Ground extends ScrollingLayer {
   Ground()
       : super(
           asset: 'ground.png',
-          position: Vector2(ErlsDinoWorld.groundLeft, ErlsDinoWorld.groundY),
+          position: Vector2(SmolJumpWorld.groundLeft, SmolJumpWorld.groundY),
           size: Vector2(
-            ErlsDinoWorld.groundWidth,
-            ErlsDinoWorld.groundHeight,
+            SmolJumpWorld.groundWidth,
+            SmolJumpWorld.groundHeight,
           ),
         );
 }

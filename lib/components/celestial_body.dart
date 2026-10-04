@@ -1,11 +1,11 @@
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 
 /// The sun or the moon. Its visibility is driven by the day/night cycle via
 /// [setIntensity]; the sprite's colors are preserved while it fades.
-class CelestialBody extends SpriteComponent with HasGameReference<ErlsDinoGame> {
+class CelestialBody extends SpriteComponent with HasGameReference<SmolJumpGame> {
   CelestialBody({
     required this.asset,
     required super.position,

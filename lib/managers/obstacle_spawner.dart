@@ -6,7 +6,7 @@ import '../components/dino.dart';
 import '../components/durian.dart';
 import '../components/garlic.dart';
 import '../components/mint_choco.dart';
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 import '../game/world.dart';
 
 /// The two kinds of hazard the spawner mixes. Ground hazards are always jumped.
@@ -15,8 +15,8 @@ import '../game/world.dart';
 enum HazardType { ground, aerial }
 
 /// Drives weighted obstacle spawning with a distance based gap.
-class ObstacleSpawner extends Component with HasGameReference<ErlsDinoGame> {
-  static const double spawnX = ErlsDinoWorld.groundRight + 6;
+class ObstacleSpawner extends Component with HasGameReference<SmolJumpGame> {
+  static const double spawnX = SmolJumpWorld.groundRight + 6;
   static const double _garlicWeight = 0.6;
   static const double _aerialWeight = 0.35;
   static const double _minGap = 130;
@@ -89,7 +89,7 @@ class ObstacleSpawner extends Component with HasGameReference<ErlsDinoGame> {
 
   void _spawn() {
     final type = _pickType();
-    final groundY = ErlsDinoWorld.groundY;
+    final groundY = SmolJumpWorld.groundY;
     final obstacle = switch (type) {
       HazardType.ground => _random.nextDouble() < _garlicWeight
           ? Garlic(position: Vector2(spawnX, groundY))

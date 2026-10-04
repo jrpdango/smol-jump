@@ -1,14 +1,14 @@
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 import '../game/world.dart';
 import 'tintable.dart';
 
 /// A decorative bird that flaps across the sky. It has no hitbox and never
 /// interacts with gameplay; it despawns once it leaves the scene.
 class Bird extends SpriteAnimationComponent
-    with HasGameReference<ErlsDinoGame>, Tintable {
+    with HasGameReference<SmolJumpGame>, Tintable {
   Bird({
     required super.position,
     this.speedMultiplier = 0.55,
@@ -36,7 +36,7 @@ class Bird extends SpriteAnimationComponent
       return;
     }
     position.x -= game.world.speed * speedMultiplier * dt;
-    if (position.x < ErlsDinoWorld.groundLeft - size.x) {
+    if (position.x < SmolJumpWorld.groundLeft - size.x) {
       removeFromParent();
     }
   }

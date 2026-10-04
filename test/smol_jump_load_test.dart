@@ -1,8 +1,8 @@
-import 'package:erls_dino/components/dino.dart';
-import 'package:erls_dino/components/durian.dart';
-import 'package:erls_dino/components/ground.dart';
-import 'package:erls_dino/game/erls_dino_game.dart';
-import 'package:erls_dino/game/world.dart';
+import 'package:smol_jump/components/dino.dart';
+import 'package:smol_jump/components/durian.dart';
+import 'package:smol_jump/components/ground.dart';
+import 'package:smol_jump/game/smol_jump_game.dart';
+import 'package:smol_jump/game/world.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,9 +14,9 @@ void main() {
   testWidgets('game loads its world components without errors', (tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
 
-    final game = ErlsDinoGame();
+    final game = SmolJumpGame();
     await tester.runAsync(() async {
-      await tester.pumpWidget(GameWidget<ErlsDinoGame>(game: game));
+      await tester.pumpWidget(GameWidget<SmolJumpGame>(game: game));
       await Future<void>.delayed(const Duration(milliseconds: 300));
     });
     await tester.pump();
@@ -31,15 +31,15 @@ void main() {
   testWidgets('durian loads and floats above the ground', (tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
 
-    final game = ErlsDinoGame();
+    final game = SmolJumpGame();
     await tester.runAsync(() async {
-      await tester.pumpWidget(GameWidget<ErlsDinoGame>(game: game));
+      await tester.pumpWidget(GameWidget<SmolJumpGame>(game: game));
       await Future<void>.delayed(const Duration(milliseconds: 300));
     });
     await tester.pump();
 
     final durian = Durian(
-      position: Vector2(ErlsDinoWorld.groundRight, ErlsDinoWorld.groundY),
+      position: Vector2(SmolJumpWorld.groundRight, SmolJumpWorld.groundY),
       bottomClearance: Durian.minBottomClearance,
     );
     await tester.runAsync(() async {
@@ -49,7 +49,7 @@ void main() {
     await tester.pump();
 
     expect(durian.sprite, isNotNull);
-    expect(durian.position.y, ErlsDinoWorld.groundY - Durian.minBottomClearance);
+    expect(durian.position.y, SmolJumpWorld.groundY - Durian.minBottomClearance);
 
     await tester.pumpWidget(const SizedBox.shrink());
   }, timeout: const Timeout(Duration(seconds: 30)));

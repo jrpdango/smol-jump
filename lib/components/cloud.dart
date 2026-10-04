@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 
-import '../game/erls_dino_game.dart';
+import '../game/smol_jump_game.dart';
 import '../game/world.dart';
 import 'tintable.dart';
 
@@ -13,7 +13,7 @@ import 'tintable.dart';
 /// [size] and its vertical band). It loads every variant of its layer and picks
 /// one at random whenever it respawns, so a layer never looks repetitive.
 class Cloud extends SpriteComponent
-    with HasGameReference<ErlsDinoGame>, Tintable {
+    with HasGameReference<SmolJumpGame>, Tintable {
   Cloud({
     required super.position,
     required this.assets,
@@ -53,7 +53,7 @@ class Cloud extends SpriteComponent
       return;
     }
     position.x -= game.world.speed * speedMultiplier * dt;
-    if (position.x + size.x < ErlsDinoWorld.groundLeft) {
+    if (position.x + size.x < SmolJumpWorld.groundLeft) {
       respawn();
     }
   }
@@ -61,7 +61,7 @@ class Cloud extends SpriteComponent
   /// Move the cloud just off the right edge and randomize its band/variant.
   void respawn() {
     randomizePosition(
-      x: ErlsDinoWorld.groundRight + _random.nextDouble() * 60,
+      x: SmolJumpWorld.groundRight + _random.nextDouble() * 60,
     );
   }
 
@@ -69,8 +69,8 @@ class Cloud extends SpriteComponent
   void randomizePosition({double? x}) {
     position
       ..x = (x ??
-              (ErlsDinoWorld.groundLeft +
-                  _random.nextDouble() * ErlsDinoWorld.groundWidth))
+              (SmolJumpWorld.groundLeft +
+                  _random.nextDouble() * SmolJumpWorld.groundWidth))
           .roundToDouble()
       ..y = (minY + _random.nextDouble() * (maxY - minY)).roundToDouble();
     _pickVariant();

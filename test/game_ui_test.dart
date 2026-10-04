@@ -1,6 +1,6 @@
-import 'package:erls_dino/components/dino.dart';
-import 'package:erls_dino/game/erls_dino_game.dart';
-import 'package:erls_dino/ui/overlays.dart';
+import 'package:smol_jump/components/dino.dart';
+import 'package:smol_jump/game/smol_jump_game.dart';
+import 'package:smol_jump/ui/overlays.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,15 +9,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  Future<ErlsDinoGame> pumpGame(WidgetTester tester) async {
+  Future<SmolJumpGame> pumpGame(WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
-    final game = ErlsDinoGame();
+    final game = SmolJumpGame();
     await tester.runAsync(() async {
       await tester.pumpWidget(
-        GameWidget<ErlsDinoGame>(
+        GameWidget<SmolJumpGame>(
           game: game,
           overlayBuilderMap: buildOverlayBuilderMap(),
-          initialActiveOverlays: const [ErlsDinoGame.overlayMainMenu],
+          initialActiveOverlays: const [SmolJumpGame.overlayMainMenu],
         ),
       );
       await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -51,7 +51,7 @@ void main() {
     await tester.pump();
 
     await tester.tapAt(
-      tester.getCenter(find.byType(GameWidget<ErlsDinoGame>)),
+      tester.getCenter(find.byType(GameWidget<SmolJumpGame>)),
     );
     await tester.pump(const Duration(seconds: 1));
 

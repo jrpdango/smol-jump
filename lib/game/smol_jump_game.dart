@@ -15,8 +15,8 @@ import 'world.dart';
 /// The high-level screen the game is currently on.
 enum GamePhase { menu, ready, playing, paused, gameOver }
 
-class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
-  ErlsDinoGame() : super(world: ErlsDinoWorld());
+class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
+  SmolJumpGame() : super(world: SmolJumpWorld());
 
   static const String overlayMainMenu = 'mainMenu';
   static const String overlayStartPrompt = 'startPrompt';
@@ -24,7 +24,7 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
   static const String overlayPauseButton = 'pauseButton';
   static const String overlayGameOver = 'gameOver';
 
-  static const String _highScoreKey = 'erls_dino.high_score';
+  static const String _highScoreKey = 'smol_jump.high_score';
 
   int score = 0;
   int highScore = 0;
@@ -57,8 +57,8 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
     camera.viewfinder
       ..anchor = Anchor.bottomCenter
       ..position = Vector2(
-        ErlsDinoWorld.virtualWidth / 2,
-        ErlsDinoWorld.virtualHeight,
+        SmolJumpWorld.virtualWidth / 2,
+        SmolJumpWorld.virtualHeight,
       );
 
     _scoreManager = ScoreManager();
@@ -80,7 +80,7 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
 
   /// Integer zoom so each virtual pixel maps to whole screen pixels.
   static double zoomForWidth(double logicalWidth) {
-    final zoom = (logicalWidth / ErlsDinoWorld.virtualWidth).floor();
+    final zoom = (logicalWidth / SmolJumpWorld.virtualWidth).floor();
     return zoom < 1 ? 1 : zoom.toDouble();
   }
 
@@ -255,7 +255,7 @@ class ErlsDinoGame extends FlameGame<ErlsDinoWorld> with KeyboardEvents {
 class _TapInput extends PositionComponent with TapCallbacks {
   _TapInput(this._game) : super(priority: 1000);
 
-  final ErlsDinoGame _game;
+  final SmolJumpGame _game;
 
   @override
   void onMount() {
