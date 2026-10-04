@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
@@ -40,6 +42,10 @@ class Dino extends SpriteAnimationComponent
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;
   late final SpriteAnimation _jumpAnimation;
+  late final List<SpriteAnimation> _deadAnimations;
+  late SpriteAnimation _deadAnimation;
+
+  final Random _random = Random();
 
   @override
   Sprite? get outlineSprite => animationTicker?.getSprite();
@@ -55,6 +61,9 @@ class Dino extends SpriteAnimationComponent
     final run1 = await game.images.load('erls-run-01.png');
     final run2 = await game.images.load('erls-run-02.png');
     final jump = await game.images.load('erls-jump.png');
+    final dead1 = await game.images.load('erls-dead-type1.png');
+    final dead2 = await game.images.load('erls-dead-type2.png');
+    final dead3 = await game.images.load('erls-dead-type3.png');
 
     _idleAnimation = SpriteAnimation.spriteList([Sprite(idle)], stepTime: 1);
     _runAnimation = SpriteAnimation.spriteList(
@@ -62,6 +71,12 @@ class Dino extends SpriteAnimationComponent
       stepTime: 0.1,
     );
     _jumpAnimation = SpriteAnimation.spriteList([Sprite(jump)], stepTime: 1);
+    _deadAnimations = [
+      SpriteAnimation.spriteList([Sprite(dead1)], stepTime: 1),
+      SpriteAnimation.spriteList([Sprite(dead2)], stepTime: 1),
+      SpriteAnimation.spriteList([Sprite(dead3)], stepTime: 1),
+    ];
+    _deadAnimation = _deadAnimations.first;
 
     animation = _idleAnimation;
     position = Vector2(ErlsDinoWorld.dinoX, ErlsDinoWorld.groundY);
@@ -91,7 +106,20 @@ class Dino extends SpriteAnimationComponent
   void die() {
     state = DinoState.dead;
     _verticalVelocity = 0;
-    animation = _idleAnimation;
+    _deadAnimation = _pickDeadAnimation();
+    _applyAnimation();
+  }
+
+  /// Weighted death art: types 1 and 2 at 45% each, type 3 at 10%.
+  SpriteAnimation _pickDeadAnimation() {
+    final roll = _random.nextDouble();
+    if (roll < 0.45) {
+      return _deadAnimations[0];
+    }
+    if (roll < 0.90) {
+      return _deadAnimations[1];
+    }
+    return _deadAnimations[2];
   }
 
   void reset() {
@@ -104,8 +132,9 @@ class Dino extends SpriteAnimationComponent
   void _applyAnimation() {
     switch (state) {
       case DinoState.idle:
-      case DinoState.dead:
         animation = _idleAnimation;
+      case DinoState.dead:
+        animation = _deadAnimation;
       case DinoState.run:
         animation = _runAnimation;
       case DinoState.jump:
