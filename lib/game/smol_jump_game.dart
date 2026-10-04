@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart' show KeyEventResult;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../managers/audio.dart';
+import '../managers/lives.dart';
 import '../managers/score.dart';
 import 'world.dart';
 
@@ -26,8 +27,20 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
 
   static const String _highScoreKey = 'smol_jump.high_score';
 
+  /// Hearts the player starts every run with.
+  static const int maxLives = 3;
+
+  /// Grace window after a non-fatal hit, during which the dino blinks and
+  /// ignores further collisions.
+  static const double invincibleSeconds = 1.2;
+
   int score = 0;
   int highScore = 0;
+  int lives = maxLives;
+
+  double _invincibleRemaining = 0;
+
+  bool get isInvincible => _invincibleRemaining > 0;
 
   /// Whether the run that just ended set a new personal best (drives the
   /// "NEW BEST!" banner on the game-over screen).
@@ -42,6 +55,7 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
   bool get isGameOver => phase == GamePhase.gameOver;
 
   late final ScoreManager _scoreManager;
+  late final LivesManager _livesManager;
   final AudioManager audio = AudioManager();
 
   @override
@@ -62,7 +76,9 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
       );
 
     _scoreManager = ScoreManager();
+    _livesManager = LivesManager();
     await camera.viewport.add(_scoreManager);
+    await camera.viewport.add(_livesManager);
     await camera.viewport.add(_TapInput(this));
 
     await _loadHighScore();
@@ -197,10 +213,23 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
     resumeEngine();
   }
 
+  /// Handles a collision with a hazard. The dino loses a heart; the run only
+  /// ends once the last heart is gone. Surviving a hit grants a short
+  /// invincibility window so a single mistake cannot drain several hearts at
+  /// once.
   void dinoHit() {
-    if (isGameOver) {
+    if (isGameOver || isInvincible) {
       return;
     }
+    lives--;
+    if (lives > 0) {
+      _invincibleRemaining = invincibleSeconds;
+      world.dino.setInvincible(true);
+      audio.playHurt();
+      return;
+    }
+    lives = 0;
+    world.dino.setInvincible(false);
     phase = GamePhase.gameOver;
     world.dino.die();
     audio.playLose();
@@ -214,10 +243,25 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
     pauseEngine();
   }
 
+  @override
+  void update(double dt) {
+    if (_invincibleRemaining > 0) {
+      _invincibleRemaining -= dt;
+      if (_invincibleRemaining <= 0) {
+        _invincibleRemaining = 0;
+        world.dino.setInvincible(false);
+      }
+    }
+    super.update(dt);
+  }
+
   /// Clears the world and score so the next screen starts clean. [running]
   /// leaves the dino mid-run (restart) vs. back in its idle menu pose.
   void _resetRunState({required bool running}) {
     score = 0;
+    lives = maxLives;
+    _invincibleRemaining = 0;
+    world.dino.setInvincible(false);
     unawaited(audio.stopAll());
     world.reset();
     _scoreManager.reset();

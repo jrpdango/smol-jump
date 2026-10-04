@@ -26,8 +26,9 @@ void main() {
     return game;
   }
 
-  testWidgets('launches into the main menu and Play shows the start prompt',
-      (tester) async {
+  testWidgets('launches into the main menu and Play shows the start prompt', (
+    tester,
+  ) async {
     final game = await pumpGame(tester);
 
     expect(game.phase, GamePhase.menu);
@@ -44,15 +45,14 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   }, timeout: const Timeout(Duration(seconds: 30)));
 
-  testWidgets('tapping the start prompt begins the run and jumps',
-      (tester) async {
+  testWidgets('tapping the start prompt begins the run and jumps', (
+    tester,
+  ) async {
     final game = await pumpGame(tester);
     game.startGame();
     await tester.pump();
 
-    await tester.tapAt(
-      tester.getCenter(find.byType(GameWidget<SmolJumpGame>)),
-    );
+    await tester.tapAt(tester.getCenter(find.byType(GameWidget<SmolJumpGame>)));
     await tester.pump(const Duration(seconds: 1));
 
     expect(game.phase, GamePhase.playing);
@@ -97,13 +97,15 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   }, timeout: const Timeout(Duration(seconds: 30)));
 
-  testWidgets('death shows game over and Play Again restarts immediately',
-      (tester) async {
+  testWidgets('death shows game over and Play Again restarts immediately', (
+    tester,
+  ) async {
     final game = await pumpGame(tester);
     game.startGame();
     game.beginRun();
     await tester.pump();
 
+    game.lives = 1;
     game.dinoHit();
     await tester.pump();
 
@@ -122,11 +124,13 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   }, timeout: const Timeout(Duration(seconds: 30)));
 
-  testWidgets('main menu from game over resets to an idle dino',
-      (tester) async {
+  testWidgets('main menu from game over resets to an idle dino', (
+    tester,
+  ) async {
     final game = await pumpGame(tester);
     game.startGame();
     game.beginRun();
+    game.lives = 1;
     game.dinoHit();
     await tester.pump();
 

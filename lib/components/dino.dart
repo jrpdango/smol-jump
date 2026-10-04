@@ -16,11 +16,7 @@ enum DinoState { idle, run, jump, dead }
 /// fair collisions.
 class Dino extends SpriteAnimationComponent
     with HasGameReference<SmolJumpGame>, Tintable, NightOutline {
-  Dino()
-      : super(
-          size: Vector2(48, 52),
-          anchor: Anchor.bottomCenter,
-        );
+  Dino() : super(size: Vector2(48, 52), anchor: Anchor.bottomCenter);
 
   static const double gravity = 1500;
   static const double jumpVelocity = -500;
@@ -31,13 +27,13 @@ class Dino extends SpriteAnimationComponent
   /// The dino's collision shape, in sprite-local pixels. The bottom-left
   /// corner is trimmed so the empty gap between the legs cannot be hit.
   static ShapeHitbox createHitbox() => PolygonHitbox([
-        Vector2(14, 16), // upper body, left
-        Vector2(34, 16), // upper body, right
-        Vector2(34, 48), // bottom of the right leg
-        Vector2(18, 48), // trimmed corner
-        Vector2(18, 43),
-        Vector2(14, 43),
-      ]);
+    Vector2(14, 16), // upper body, left
+    Vector2(34, 16), // upper body, right
+    Vector2(34, 48), // bottom of the right leg
+    Vector2(18, 48), // trimmed corner
+    Vector2(18, 43),
+    Vector2(14, 43),
+  ]);
 
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;
@@ -53,6 +49,19 @@ class Dino extends SpriteAnimationComponent
   DinoState state = DinoState.idle;
   double _verticalVelocity = 0;
 
+  bool _invincible = false;
+  double _blinkTimer = 0;
+
+  /// Interval between on/off beats of the post-hit blink.
+  static const double _blinkInterval = 0.08;
+
+  /// While invincible the dino blinks and collisions are ignored (the guard
+  /// lives in [SmolJumpGame.dinoHit]).
+  void setInvincible(bool value) {
+    _invincible = value;
+    _blinkTimer = 0;
+  }
+
   @override
   Future<void> onLoad() async {
     paint.filterQuality = FilterQuality.none;
@@ -66,10 +75,10 @@ class Dino extends SpriteAnimationComponent
     final dead3 = await game.images.load('erls-dead-type3.png');
 
     _idleAnimation = SpriteAnimation.spriteList([Sprite(idle)], stepTime: 1);
-    _runAnimation = SpriteAnimation.spriteList(
-      [Sprite(run1), Sprite(run2)],
-      stepTime: 0.1,
-    );
+    _runAnimation = SpriteAnimation.spriteList([
+      Sprite(run1),
+      Sprite(run2),
+    ], stepTime: 0.1);
     _jumpAnimation = SpriteAnimation.spriteList([Sprite(jump)], stepTime: 1);
     _deadAnimations = [
       SpriteAnimation.spriteList([Sprite(dead1)], stepTime: 1),
@@ -107,6 +116,7 @@ class Dino extends SpriteAnimationComponent
   void die() {
     state = DinoState.dead;
     _verticalVelocity = 0;
+    setInvincible(false);
     _deadAnimation = _pickDeadAnimation();
     _applyAnimation();
   }
@@ -125,6 +135,7 @@ class Dino extends SpriteAnimationComponent
 
   void reset() {
     _verticalVelocity = 0;
+    setInvincible(false);
     position.setValues(SmolJumpWorld.dinoX, SmolJumpWorld.groundY);
     state = DinoState.run;
     _applyAnimation();
@@ -133,6 +144,7 @@ class Dino extends SpriteAnimationComponent
   /// Returns the dino to its grounded idle pose, used by the main menu.
   void resetToIdle() {
     _verticalVelocity = 0;
+    setInvincible(false);
     position.setValues(SmolJumpWorld.dinoX, SmolJumpWorld.groundY);
     state = DinoState.idle;
     _applyAnimation();
@@ -167,8 +179,21 @@ class Dino extends SpriteAnimationComponent
       }
     }
 
+    if (_invincible) {
+      _blinkTimer += dt;
+    }
+
     position
       ..x = SmolJumpWorld.dinoX
       ..y = position.y.roundToDouble();
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // Blink through the post-hit grace window by skipping alternate beats.
+    if (_invincible && (_blinkTimer / _blinkInterval).floor().isEven) {
+      return;
+    }
+    super.render(canvas);
   }
 }

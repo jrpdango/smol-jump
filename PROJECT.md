@@ -43,6 +43,7 @@ engine handles upscaling via integer zoom.
 | Moon          | `moon.png`                           | 24 x 24  |
 | Bird          | `bird-01.png`, `bird-02.png`         | 11 x 7   |
 | Star          | `star-01.png`, `star-02.png`         | 3 x 3, 5 x 5 |
+| Heart         | `heart-full.png`, `heart-empty.png`  | 14 x 12  |
 | Ground tile   | `ground.png`                         | 180 x 12 |
 
 Death sprite is not authored yet; reuse `erls-idle.png` for now.
@@ -124,12 +125,13 @@ lib/
     obstacle_spawner.dart    # speed ramp + weighted spawn
     bird_spawner.dart        # decorative flocks
     day_night_cycle.dart     # keyframed time-of-day
+    lives.dart               # hearts HUD
     score.dart
   ui/
     game_over_overlay.dart
 assets/
   images/*.png               # one PNG per frame (e.g. erls-run-01.png)
-  audio/*.wav                # sfx via flutter_soloud: jump/land/lose
+  audio/*.wav                # sfx via flutter_soloud: jump/land/hurt/lose/select
 ```
 
 ## Gameplay scope
@@ -139,6 +141,10 @@ assets/
   scroll speed increases over time.
 - Collision: `RectangleHitbox` on dino (smaller than sprite for fairness) and
   obstacles.
+- Lives: three hearts (`heart-full.png` / `heart-empty.png`), drawn top-left in
+  the HUD. A hit costs one heart and grants a short invincibility blink
+  (`SmolJumpGame.invincibleSeconds`); the run ends only when the last heart is
+  gone.
 - Score: distance-based, integer, shown in HUD (viewport child).
 - Game over overlay -> tap to restart; persist high score
   (`shared_preferences`).
