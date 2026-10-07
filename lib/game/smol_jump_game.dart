@@ -24,8 +24,10 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
   static const String overlayPause = 'pause';
   static const String overlayPauseButton = 'pauseButton';
   static const String overlayGameOver = 'gameOver';
+  static const String overlaySettings = 'settings';
 
   static const String _highScoreKey = 'smol_jump.high_score';
+  static const String _volumeKey = 'smol_jump.volume';
 
   /// Hearts the player starts every run with.
   static const int maxLives = 3;
@@ -37,6 +39,12 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
   int score = 0;
   int highScore = 0;
   int lives = maxLives;
+
+  /// Current effect volume (0..1), mirrored from [AudioManager.volume].
+  double get volume => audio.volume;
+
+  /// The screen settings was opened from, so closing it returns there.
+  GamePhase? _settingsReturn;
 
   double _invincibleRemaining = 0;
 
@@ -82,6 +90,7 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
     await camera.viewport.add(_TapInput(this));
 
     await _loadHighScore();
+    await _loadVolume();
 
     phase = GamePhase.menu;
   }
@@ -213,6 +222,37 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
     resumeEngine();
   }
 
+  /// Opens the settings screen, remembering where to return on close.
+  void openSettings() {
+    if (phase != GamePhase.menu && phase != GamePhase.paused) {
+      return;
+    }
+    _settingsReturn = phase;
+    overlays
+      ..remove(overlayMainMenu)
+      ..remove(overlayPause)
+      ..add(overlaySettings);
+  }
+
+  /// Closes settings and restores the screen it was opened from.
+  void closeSettings() {
+    final returnTo = _settingsReturn;
+    if (returnTo == null) {
+      return;
+    }
+    _settingsReturn = null;
+    overlays.remove(overlaySettings);
+    overlays.add(
+      returnTo == GamePhase.paused ? overlayPause : overlayMainMenu,
+    );
+  }
+
+  /// Updates the effect volume and persists it for the next launch.
+  void setVolume(double value) {
+    audio.setVolume(value);
+    _persistVolume(audio.volume);
+  }
+
   /// Handles a collision with a hazard. The dino loses a heart; the run only
   /// ends once the last heart is gone. Surviving a hit grants a short
   /// invincibility window so a single mistake cannot drain several hearts at
@@ -289,6 +329,24 @@ class SmolJumpGame extends FlameGame<SmolJumpWorld> with KeyboardEvents {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_highScoreKey, value);
+    } catch (_) {
+      // Persistence is best effort.
+    }
+  }
+
+  Future<void> _loadVolume() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      audio.setVolume(prefs.getDouble(_volumeKey) ?? AudioManager.defaultVolume);
+    } catch (_) {
+      audio.setVolume(AudioManager.defaultVolume);
+    }
+  }
+
+  Future<void> _persistVolume(double value) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setDouble(_volumeKey, value);
     } catch (_) {
       // Persistence is best effort.
     }

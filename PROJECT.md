@@ -129,6 +129,7 @@ lib/
     score.dart
   ui/
     game_over_overlay.dart
+    settings_overlay.dart      # volume slider (default 50%, persisted)
 assets/
   images/*.png               # one PNG per frame (e.g. erls-run-01.png)
   audio/*.wav                # sfx via flutter_soloud: jump/land/hurt/lose/select

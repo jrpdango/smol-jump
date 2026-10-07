@@ -8,11 +8,13 @@ class PauseOverlay extends StatelessWidget {
     super.key,
     required this.onResume,
     required this.onRestart,
+    required this.onSettings,
     required this.onMenu,
   });
 
   final VoidCallback onResume;
   final VoidCallback onRestart;
+  final VoidCallback onSettings;
   final VoidCallback onMenu;
 
   @override
@@ -33,6 +35,8 @@ class PauseOverlay extends StatelessWidget {
               ),
               const SizedBox(height: 14),
               PixelButton(label: 'RESTART', onPressed: onRestart),
+              const SizedBox(height: 14),
+              PixelButton(label: 'SETTINGS', onPressed: onSettings),
               const SizedBox(height: 14),
               PixelButton(label: 'MAIN MENU', onPressed: onMenu),
             ],

@@ -20,9 +20,12 @@ class AudioManager {
     this.hurtAsset = 'assets/audio/hurt.wav',
     this.loseAsset = 'assets/audio/lose.wav',
     this.selectAsset = 'assets/audio/select.wav',
-    this.volume = 0.8,
+    this.volume = defaultVolume,
     bool? enabled,
   }) : _enabled = enabled ?? _platformSupportsAudio();
+
+  /// Volume every effect is played at until the player changes it.
+  static const double defaultVolume = 0.5;
 
   /// How long the output device stays running after the engine goes idle.
   ///
@@ -47,7 +50,15 @@ class AudioManager {
   final String hurtAsset;
   final String loseAsset;
   final String selectAsset;
-  final double volume;
+
+  /// Playback volume (0..1) applied to every effect. Updated live from the
+  /// settings screen via [setVolume].
+  double volume;
+
+  /// Clamps and stores the effect volume.
+  void setVolume(double value) {
+    volume = value.clamp(0.0, 1.0);
+  }
 
   /// Accessed lazily so merely constructing an [AudioManager] never touches the
   /// native engine.

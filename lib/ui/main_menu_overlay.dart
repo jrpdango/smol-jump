@@ -8,10 +8,12 @@ class MainMenuOverlay extends StatelessWidget {
     super.key,
     required this.highScore,
     required this.onPlay,
+    required this.onSettings,
   });
 
   final int highScore;
   final VoidCallback onPlay;
+  final VoidCallback onSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,8 @@ class MainMenuOverlay extends StatelessWidget {
                   accent: true,
                   onPressed: onPlay,
                 ),
+                const SizedBox(height: 14),
+                PixelButton(label: 'SETTINGS', onPressed: onSettings),
                 const SizedBox(height: 24),
                 if (highScore > 0)
                   Text(

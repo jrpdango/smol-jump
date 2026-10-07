@@ -124,6 +124,82 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   }, timeout: const Timeout(Duration(seconds: 30)));
 
+  testWidgets('volume defaults to 50 percent', (tester) async {
+    final game = await pumpGame(tester);
+
+    expect(game.volume, 0.5);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  }, timeout: const Timeout(Duration(seconds: 30)));
+
+  testWidgets('settings opens from the menu and back returns to it', (
+    tester,
+  ) async {
+    final game = await pumpGame(tester);
+
+    await tester.tap(find.text('SETTINGS'));
+    await tester.pump();
+
+    expect(find.byKey(const Key('volumeSlider')), findsOneWidget);
+    expect(find.text('BACK'), findsOneWidget);
+    expect(find.text('PLAY'), findsNothing);
+
+    await tester.tap(find.text('BACK'));
+    await tester.pump();
+
+    expect(find.text('PLAY'), findsOneWidget);
+    expect(find.byKey(const Key('volumeSlider')), findsNothing);
+    expect(game.phase, GamePhase.menu);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  }, timeout: const Timeout(Duration(seconds: 30)));
+
+  testWidgets('dragging the slider updates and persists the volume', (
+    tester,
+  ) async {
+    final game = await pumpGame(tester);
+    game.openSettings();
+    await tester.pump();
+
+    await tester.drag(find.byKey(const Key('volumeSlider')), const Offset(100, 0));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+
+    expect(game.volume, greaterThan(0.5));
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getDouble('smol_jump.volume'), game.volume);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  }, timeout: const Timeout(Duration(seconds: 30)));
+
+  testWidgets('settings opens from pause and back returns to pause', (
+    tester,
+  ) async {
+    final game = await pumpGame(tester);
+    game.startGame();
+    game.beginRun();
+    game.pauseGame();
+    await tester.pump();
+
+    await tester.tap(find.text('SETTINGS'));
+    await tester.pump();
+
+    expect(find.byKey(const Key('volumeSlider')), findsOneWidget);
+    expect(find.text('PAUSED'), findsNothing);
+
+    await tester.tap(find.text('BACK'));
+    await tester.pump();
+
+    expect(find.text('PAUSED'), findsOneWidget);
+    expect(find.byKey(const Key('volumeSlider')), findsNothing);
+    expect(game.phase, GamePhase.paused);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  }, timeout: const Timeout(Duration(seconds: 30)));
+
   testWidgets('main menu from game over resets to an idle dino', (
     tester,
   ) async {
