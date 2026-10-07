@@ -1,17 +1,19 @@
 # Smol Jump
 
-A tiny pixel-art endless runner built with Flame on Flutter.
+A tiny pixel art endless runner built with Flame on Flutter.
 
-## Getting Started
+### Cool things
 
-This project is a starting point for a Flutter application.
+- Fully custom handmade pixel art and sound effects
+- Day/night cycle
+- 2 standard death sprites + 1 ultra super-duper rare one (10% chance)
+- Single-button control action -- your one finger will get all the exercise it needs
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshots
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<p align="center">
+    <img src="assets/icon/smol-jump1.png" width="20%" alt="Smol Jump screenshot 1" />
+    <img src="assets/icon/smol-jump2.png" width="20%" alt="Smol Jump screenshot 2" />
+    <img src="assets/icon/smol-jump3.png" width="20%" alt="Smol Jump screenshot 3" />
+    <img src="assets/icon/smol-jump4.png" width="20%" alt="Smol Jump screenshot 4" />
+</p>
